@@ -33,8 +33,12 @@ npm install
 
 Crie um arquivo `.env` na raiz da pasta `backend` com as seguintes variáveis:
 ```env
-DATABASE_URL="file:./dev.db"
 JWT_SECRET="sua_chave_secreta_aqui"
+DATABASE_URL="postgresql://USUARIO:SENHA@localhost:5432/NOME_DO_BANCO?schema=public"
+
+CLOUDINARY_CLOUD_NAME="o_seu_cloud_name"
+CLOUDINARY_API_KEY="a_sua_api_key"
+CLOUDINARY_API_SECRET="o_seu_api_secret"
 ```
 
 Prepare o banco de dados e gere o cliente do Prisma:
