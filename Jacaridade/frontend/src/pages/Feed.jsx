@@ -16,59 +16,139 @@ const Feed = () => {
   const [showPixModal, setShowPixModal] = useState(null);
   const user = JSON.parse(localStorage.getItem('user'));
 
+  // const fetchData = async () => {
+  //   try {
+  //     const ongsResponse = await axios.get('http://localhost:3001/api/ongs');
+  //     let ongsData = ongsResponse.data;
+
+  //     if (user) {
+  //       const profileResponse = await axios.get(`http://localhost:3001/api/users/${user.id}`);
+  //       const supportedIds = profileResponse.data.supportedOngs.map(o => o.id);
+  //       setUserSupports(supportedIds);
+
+  //       // --- BUSCAR POSTS DAS ONGS APOIADAS ---
+  //       if (user.type === 'U' && supportedIds.length > 0) {
+  //         try {
+  //           // Cria um array de requisições para buscar os posts de cada ONG apoiada
+  //           const postPromises = supportedIds.map(id => axios.get(`http://localhost:3001/api/posts/ong/${id}`));
+  //           const postResponses = await Promise.all(postPromises);
+            
+  //           // Junta todos os posts e anexa a foto/nome da ONG em cada post
+  //           let posts = postResponses.flatMap((res, index) => {
+  //             const ongId = supportedIds[index];
+  //             const ongInfo = ongsData.find(o => o.id === ongId);
+  //             return res.data.map(post => ({ ...post, ong: ongInfo }));
+  //           });
+            
+  //           console.log(posts);
+            
+
+  //           // Ordena os posts: os mais novos primeiro
+  //           posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  //           setFeedPosts(posts);
+  //         } catch (err) {
+  //           console.error('Erro ao buscar posts para o feed', err);
+  //         }
+  //       } else if (user.type === 'O') {
+  //         try {
+  //           const res = await axios.get(`http://localhost:3001/api/posts/ong/${user.id}`);
+  //           const ongInfo = ongsData.find(o => o.id === user.id);
+  //           let myPosts = res.data.map(post => ({ ...post, ong: user }));
+  //           myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  //           console.log(myPosts);
+            
+  //           setFeedPosts(myPosts);
+  //         } catch (err) {
+  //           console.error('Erro ao buscar posts da ONG', err);
+  //         }
+  //       } else {
+  //         setFeedPosts([]);
+  //       }
+
+  //       // --- CALCULAR MATCH SCORE (Recomendações) ---
+  //       if (user.description) {
+  //         const userInterests = user.description.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+  //         ongsData = ongsData.map(ong => {
+  //           let score = 0;
+  //           const ongDesc = (ong.description || '').toLowerCase();
+  //           userInterests.forEach(interest => {
+  //             if (ongDesc.includes(interest)) score++;
+  //           });
+  //           return { ...ong, matchScore: score };
+  //         });
+  //         ongsData.sort((a, b) => b.matchScore - a.matchScore);
+  //       }
+  //     }
+
+  //     setOngs(ongsData);
+  //   } catch (error) {
+  //     console.error('Erro ao buscar dados', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const fetchData = async () => {
     try {
-      const ongsResponse = await axios.get('http://localhost:3001/api/ongs');
-      let ongsData = ongsResponse.data;
-
-      if (user) {
-        const profileResponse = await axios.get(`http://localhost:3001/api/users/${user.id}`);
-        const supportedIds = profileResponse.data.supportedOngs.map(o => o.id);
-        setUserSupports(supportedIds);
-
-        // --- BUSCAR POSTS DAS ONGS APOIADAS ---
-        if (user.type === 'U' && supportedIds.length > 0) {
-          try {
-            // Cria um array de requisições para buscar os posts de cada ONG apoiada
-            const postPromises = supportedIds.map(id => axios.get(`http://localhost:3001/api/posts/ong/${id}`));
-            const postResponses = await Promise.all(postPromises);
-            
-            // Junta todos os posts e anexa a foto/nome da ONG em cada post
-            let posts = postResponses.flatMap((res, index) => {
-              const ongId = supportedIds[index];
-              const ongInfo = ongsData.find(o => o.id === ongId);
-              return res.data.map(post => ({ ...post, ong: ongInfo }));
-            });
-            
-            // Ordena os posts: os mais novos primeiro
-            posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            setFeedPosts(posts);
-          } catch (err) {
-            console.error('Erro ao buscar posts para o feed', err);
-          }
-        } else {
-          setFeedPosts([]);
-        }
-
-        // --- CALCULAR MATCH SCORE (Recomendações) ---
-        if (user.description) {
-          const userInterests = user.description.toLowerCase().split(/\W+/).filter(w => w.length > 3);
-          ongsData = ongsData.map(ong => {
-            let score = 0;
-            const ongDesc = (ong.description || '').toLowerCase();
-            userInterests.forEach(interest => {
-              if (ongDesc.includes(interest)) score++;
-            });
-            return { ...ong, matchScore: score };
-          });
-          ongsData.sort((a, b) => b.matchScore - a.matchScore);
-        }
+      if (!user) {
+        setLoading(false);
+        return;
       }
 
+      // 1. Execução isolada para usuário ONG
+      if (user.type === 'O') {
+        const res = await axios.get(`http://localhost:3001/api/posts/ong/${user.id}`);
+        console.log("Auditoria de Estado - Posts da ONG:", res.data); 
+        
+        const myPosts = res.data.map(post => ({ ...post, ong: user }));
+        myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        setFeedPosts(myPosts);
+        setLoading(false);
+        return; // Interrompe a função; ONGs não processam o grid inferior
+      }
+
+      // 2. Execução exclusiva para usuário Doador (Tipo 'U')
+      const ongsResponse = await axios.get('http://localhost:3001/api/ongs');
+      let ongsData = ongsResponse.data;
+      
+      const profileResponse = await axios.get(`http://localhost:3001/api/users/${user.id}`);
+      const supportedIds = profileResponse.data.supportedOngs?.map(o => o.id) || [];
+      setUserSupports(supportedIds);
+
+      if (supportedIds.length > 0) {
+        const postPromises = supportedIds.map(id => axios.get(`http://localhost:3001/api/posts/ong/${id}`));
+        const postResponses = await Promise.all(postPromises);
+        
+        let posts = postResponses.flatMap((res, index) => {
+          const ongId = supportedIds[index];
+          const ongInfo = ongsData.find(o => o.id === ongId);
+          return res.data.map(post => ({ ...post, ong: ongInfo }));
+        });
+        
+        posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setFeedPosts(posts);
+      } else {
+        setFeedPosts([]);
+      }
+
+      if (user.description) {
+        const userInterests = user.description.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+        ongsData = ongsData.map(ong => {
+          let score = 0;
+          const ongDesc = (ong.description || '').toLowerCase();
+          userInterests.forEach(interest => {
+            if (ongDesc.includes(interest)) score++;
+          });
+          return { ...ong, matchScore: score };
+        });
+        ongsData.sort((a, b) => b.matchScore - a.matchScore);
+      }
+      
       setOngs(ongsData);
+      setLoading(false);
+
     } catch (error) {
-      console.error('Erro ao buscar dados', error);
-    } finally {
+      console.error('Falha na execução do fetchData:', error);
       setLoading(false);
     }
   };
@@ -117,9 +197,7 @@ const Feed = () => {
         </header>
 
         {user?.type === 'O' && (
-          <div style={{maxWidth: '48rem', margin: '0 auto'}}>
-            <PostForm onPostCreated={fetchData} />
-          </div>
+          <PostForm onPostCreated={fetchData} />
         )}
 
         {/* NAVEGAÇÃO DE ABAS PARA USUÁRIOS (Descobrir x Feed) */}
@@ -205,46 +283,46 @@ const Feed = () => {
             )}
 
             {/* ABA: MEU FEED (Mostra os posts das ONGs apoiadas) */}
-            {activeTab === 'feed' && user?.type === 'U' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '42rem', margin: '0 auto' }}>
-                {feedPosts.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
-                    <LayoutList size={48} color="rgba(var(--rgb-accent), 0.2)" style={{ margin: '0 auto 1rem auto' }} />
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Nenhuma novidade ainda</h3>
-                    <p style={{ color: 'rgba(var(--rgb-text), 0.5)', fontSize: '0.875rem' }}>Apoie mais causas ou aguarde as ONGs que você segue postarem atualizações.</p>
-                  </div>
-                ) : (
-                  feedPosts.map(post => (
-                    <div key={post.id} style={{ backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', overflow: 'hidden', border: '1px solid rgba(var(--rgb-accent), 0.05)', boxShadow: '0 10px 15px -3px rgba(var(--rgb-accent), 0.05)' }}>
-                      
-                      {/* Cabeçalho do Post */}
-                      <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid var(--cozy-bg)', cursor: 'pointer' }} onClick={() => setSelectedOng(post.ong)}>
-                        <img src={post.ong?.profilePicture || 'https://via.placeholder.com/40'} alt={post.ong?.name} style={{ width: '3rem', height: '3rem', borderRadius: '1rem', objectFit: 'cover' }} />
-                        <div>
-                          <h4 style={{ fontWeight: 'bold', margin: '0 0 0.25rem 0', color: 'var(--cozy-text)' }}>{post.ong?.name}</h4>
-                          <span style={{ fontSize: '0.75rem', color: 'rgba(var(--rgb-text), 0.4)', fontWeight: 'bold', textTransform: 'uppercase' }}>
-                            {new Date(post.createdAt).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {/* Imagem do Post */}
-                      {post.image && (
-                        <div style={{ backgroundColor: 'var(--cozy-bg)' }}>
-                          <img src={post.image} alt={post.title} style={{ width: '100%', maxHeight: '24rem', objectFit: 'contain' }} />
-                        </div>
-                      )}
+            {/* O Feed de posts é exibido integralmente para ONGs ou na aba 'feed' para Doadores */}
+{(user?.type === 'O' || (user?.type === 'U' && activeTab === 'feed')) && (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '42rem', margin: '0 auto' }}>
+    {feedPosts.length === 0 ? (
+      <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Nenhuma novidade ainda</h3>
+      </div>
+    ) : (
+      feedPosts.map(post => (
+        <div key={post.id} style={{ backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', overflow: 'hidden', border: '1px solid rgba(var(--rgb-accent), 0.05)' }}>
+          
+          {/* Cabeçalho do Post */}
+          <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid var(--cozy-bg)' }}>
+            <img src={post.ong?.profilePicture || `https://ui-avatars.com/api/?name=${post.ong?.name}&background=random&size=150`} alt={post.ong?.name} style={{ width: '3rem', height: '3rem', borderRadius: '1rem', objectFit: 'cover' }} />
+            <div>
+              <h4 style={{ fontWeight: 'bold', margin: '0 0 0.25rem 0', color: 'var(--cozy-text)' }}>{post.ong?.name}</h4>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(var(--rgb-text), 0.4)', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                {new Date(post.createdAt).toLocaleDateString('pt-BR')}
+              </span>
+            </div>
+          </div>
+          
+          {/* Imagem do Post (se existir) */}
+          {post.image && (
+            <div style={{ backgroundColor: 'var(--cozy-bg)' }}>
+              <img src={post.image} alt={post.title} style={{ width: '100%', maxHeight: '24rem', objectFit: 'contain' }} />
+            </div>
+          )}
 
-                      {/* Conteúdo do Post */}
-                      <div style={{ padding: '2rem' }}>
-                        <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem', color: 'var(--cozy-text)' }}>{post.title}</h3>
-                        <p style={{ color: 'rgba(var(--rgb-text), 0.8)', lineHeight: '1.8', whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>{post.content}</p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+          {/* Conteúdo do Post */}
+          <div style={{ padding: '2rem' }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem', color: 'var(--cozy-text)' }}>{post.title}</h3>
+            <p style={{ color: 'rgba(var(--rgb-text), 0.8)', lineHeight: '1.8', whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>{post.content}</p>
+          </div>
+          
+        </div>
+      ))
+    )}
+  </div>
+)}
           </>
         )}
       </main>

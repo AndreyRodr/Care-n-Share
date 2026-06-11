@@ -1,5 +1,6 @@
 import userService from '../services/UserService.js';
 import userRepository from '../repositories/UserRepository.js';
+import { uploadImage } from '../config/cloudinary.js';
 
 class UserController {
   /**
@@ -7,7 +8,20 @@ class UserController {
    */
   async register(req, res) {
     try {
-      const user = await userService.register(req.body);
+      let imageUrl = null;
+
+      // Se uma imagem foi enviada, faz o upload para o Cloudinary
+      if (req.file) {
+        const uploadResult = await uploadImage(req.file.buffer, 'jacaridade_users');
+        imageUrl = uploadResult.secure_url;
+      }
+
+      const userData = {
+        ...req.body,
+        profilePicture: imageUrl
+      };
+
+      const user = await userService.register(userData);
       return res.status(201).json(user);
     } catch (error) {
       return res.status(400).json({ error: error.message });
@@ -85,6 +99,10 @@ class UserController {
       if (description !== undefined) cleanData.description = description;
       if (profilePicture !== undefined) cleanData.profilePicture = profilePicture;
       if (pixKey !== undefined) cleanData.pixKey = pixKey;
+      if (req.file) {
+        const uploadResult = await uploadImage(req.file.buffer, 'jacaridade_users');
+        cleanData.profilePicture = uploadResult.secure_url;
+      }
 
       const updatedUser = await userRepository.update(userId, cleanData);
 

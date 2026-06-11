@@ -49,7 +49,18 @@ const PostForm = ({ onPostCreated }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:3001/api/posts', formData, {
+
+      const submitData = new FormData();
+      submitData.append('title', formData.title);
+      submitData.append('content', formData.content);
+
+      if (formData.image) {
+        const fetchReponse = await fetch(formData.image);
+        const blob = await fetchReponse.blob();
+        submitData.append('image', blob, 'post-image.jpg');
+      }
+
+      await axios.post('http://localhost:3001/api/posts', submitData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setFormData({ title: '', content: '', image: '' });

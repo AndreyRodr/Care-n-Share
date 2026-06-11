@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import postController from '../controllers/PostController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import { upload } from '../config/cloudinary.js';
 
 const router = Router();
 
@@ -9,6 +10,6 @@ router.get('/', postController.getAll);
 router.get('/ong/:ongId', postController.getByOng);
 
 // Rota protegida para criar posts (Apenas ONGs)
-router.post('/', authMiddleware, postController.create);
+router.post('/', authMiddleware, upload.single('image'), postController.create);
 
 export default router;

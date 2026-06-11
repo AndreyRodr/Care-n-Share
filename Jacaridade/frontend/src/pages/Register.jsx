@@ -45,9 +45,27 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); setLoading(true);
+    setError(''); 
+    setLoading(true);
+
     try {
-      await axios.post('http://localhost:3001/api/register', formData);
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('password', formData.password);
+      submitData.append('description', formData.description);
+      submitData.append('type', formData.type);
+      
+      if (formData.pixKey) submitData.append('pixKey', formData.pixKey);
+
+      // Converte a base64 de volta para um arquivo físico e anexa
+      if (formData.profilePicture) {
+        const fetchResponse = await fetch(formData.profilePicture);
+        const blob = await fetchResponse.blob();
+        submitData.append('profilePicture', blob, 'profile-pic.jpg');
+      }
+
+      await axios.post('http://localhost:3001/api/register', submitData);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || 'Erro ao cadastrar. Tente novamente.');

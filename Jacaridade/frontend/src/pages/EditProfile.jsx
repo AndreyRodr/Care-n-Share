@@ -81,7 +81,20 @@ const EditProfile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('http://localhost:3001/api/me', formData, {
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('description', formData.description);
+      if (formData.pixKey !== undefined) submitData.append('pixKey', formData.pixKey);
+
+      // Verifica se a imagem é nova (Base64). Se for, anexa como arquivo.
+      if (formData.profilePicture && formData.profilePicture.startsWith('data:image')) {
+        const fetchResponse = await fetch(formData.profilePicture);
+        const blob = await fetchResponse.blob();
+        submitData.append('profilePicture', blob, 'profile-pic.jpg');
+      }
+
+      const response = await axios.put('http://localhost:3001/api/me', submitData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
