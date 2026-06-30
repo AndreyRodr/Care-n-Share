@@ -2,6 +2,9 @@
 
 O **Care n' Share** é uma plataforma desenvolvida para facilitar a conexão entre doadores e ONGs, permitindo que causas sociais ganhem visibilidade e apoio financeiro de forma rápida e intuitiva.
 
+## Relatório e documentação
+https://docs.google.com/document/d/139URQLGsATwxHRrrnv2ibY2nFECOGS-K-7CqcdkDqoE/edit?usp=sharing
+
 ## ✨ Funcionalidades Principais
 - **Match de Interesses**: Algoritmo que recomenda ONGs com base nos interesses do usuário.
 - **Mural de Posts**: ONGs podem publicar atualizações e fotos (estilo rede social).
