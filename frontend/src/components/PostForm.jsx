@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ImagePlus, Send, X } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/api.js';
+import { toast } from '../utils/toast.js';
 
 const PostForm = ({ onPostCreated }) => {
   const [formData, setFormData] = useState({ title: '', content: '', image: '' });
@@ -48,8 +49,6 @@ const PostForm = ({ onPostCreated }) => {
     
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-
       const submitData = new FormData();
       submitData.append('title', formData.title);
       submitData.append('content', formData.content);
@@ -60,15 +59,13 @@ const PostForm = ({ onPostCreated }) => {
         submitData.append('image', blob, 'post-image.jpg');
       }
 
-      await axios.post('http://localhost:3001/api/posts', submitData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post('/api/posts', submitData);
       setFormData({ title: '', content: '', image: '' });
       setPreview(null);
       if (onPostCreated) onPostCreated();
-      alert('Publicado com sucesso! ✨');
+      toast.success('Publicado com sucesso! ✨');
     } catch (error) {
-      alert('Erro ao publicar. Tente novamente.');
+      toast.error('Erro ao publicar. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -103,7 +100,7 @@ const PostForm = ({ onPostCreated }) => {
         {preview && (
           <div style={{position: 'relative', marginTop: '1rem', width: '100%', aspectRatio: '16/9', borderRadius: '1rem', overflow: 'hidden'}}>
             <img src={preview} alt="Preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-            <button type="button" onClick={() => {setPreview(null); setFormData({...formData, image: ''})}} style={{position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', borderRadius: '50%', padding: '4px', cursor: 'pointer'}}>
+            <button type="button" onClick={() => {setPreview(null); setFormData({...formData, image: ''})}} className="btn-remove-image" aria-label="Remover imagem">
               <X size={16} />
             </button>
           </div>

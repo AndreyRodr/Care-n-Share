@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Mail, User, ArrowLeft, Save, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api.js';
 import Navbar from '../components/Navbar.jsx';
+import usePageTitle from '../hooks/usePageTitle.js';
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  usePageTitle('Editar Perfil');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -80,7 +82,6 @@ const EditProfile = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      const token = localStorage.getItem('token');
       const submitData = new FormData();
       submitData.append('name', formData.name);
       submitData.append('email', formData.email);
@@ -94,15 +95,13 @@ const EditProfile = () => {
         submitData.append('profilePicture', blob, 'profile-pic.jpg');
       }
 
-      const response = await axios.put('http://localhost:3001/api/me', submitData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.put('/api/me', submitData);
 
       localStorage.setItem('user', JSON.stringify(response.data));
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso! Redirecionando... ✨' });
       
       setTimeout(() => {
-        window.location.href = '/';
+        navigate('/');
       }, 1500);
     } catch (error) {
       const errorMsg = error.response?.data?.error || 'Erro ao atualizar o perfil. Tente novamente.';
@@ -125,7 +124,7 @@ const EditProfile = () => {
         <div className="login-card" style={{ maxWidth: '100%' }}>
           <div className="login-header" style={{ marginBottom: '2.5rem' }}>
             <h1 className="login-title">Personalizar Perfil</h1>
-            <p className="login-subtitle">Deixe sua marca na comunidade Jacaridade.</p>
+            <p className="login-subtitle">Deixe sua marca na comunidade Care n' Share.</p>
           </div>
 
           {message.text && (
