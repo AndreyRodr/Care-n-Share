@@ -12,6 +12,7 @@ router.get('/ongs', userController.listOngs);
 router.get('/users/:id', userController.getProfile);
 
 // Rotas Privadas (Necessitam de Token)
+router.post('/logout', authMiddleware, userController.logout);
 router.post('/ongs/:id/support', authMiddleware, userController.support);
 router.delete('/ongs/:id/support', authMiddleware, userController.removeSupport);
 router.put('/me', authMiddleware, upload.single('profilePicture'), userController.update);

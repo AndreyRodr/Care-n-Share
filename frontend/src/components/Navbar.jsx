@@ -1,15 +1,34 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, LogOut, UserCircle } from 'lucide-react';
+import axios from 'axios';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      if (token) {
+        await axios.post(
+          'http://localhost:3001/api/logout',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+      }
+    } finally {
+      // Limpa o navegador mesmo se o token já estiver expirado
+      // ou se houver falha de conexão.
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+    }
   };
 
   return (

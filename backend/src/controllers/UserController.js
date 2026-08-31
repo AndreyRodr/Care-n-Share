@@ -41,6 +41,15 @@ class UserController {
     }
   }
 
+  async logout(req, res) {
+    try {
+      await userService.logout(req.user.id);
+
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
   /**
    * Endpoint para listar todas as ONGs
    */
