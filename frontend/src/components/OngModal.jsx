@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api.js';
 import { X, LayoutList } from 'lucide-react';
+import PostCard from './PostCard.jsx';
 
 const OngModal = ({ ong, onClose }) => {
   const [posts, setPosts] = useState([]);
@@ -10,7 +11,7 @@ const OngModal = ({ ong, onClose }) => {
   useEffect(() => {
     const fetchOngPosts = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/api/posts/ong/${ong.id}`);
+        const res = await api.get(`/api/posts/ong/${ong.id}`);
         const sortedPosts = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setPosts(sortedPosts);
       } catch (error) {
@@ -45,6 +46,7 @@ const OngModal = ({ ong, onClose }) => {
         {/* Botão Fechar */}
         <button 
           onClick={onClose}
+          aria-label="Fechar"
           style={{
             position: 'absolute', top: '1rem', right: '1rem', zIndex: 10,
             background: 'var(--cozy-card)', border: 'none', borderRadius: '50%',
@@ -103,23 +105,7 @@ const OngModal = ({ ong, onClose }) => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {posts.map(post => (
-                  <div key={post.id} style={{ backgroundColor: 'var(--cozy-card)', borderRadius: '1.5rem', overflow: 'hidden', border: '1px solid rgba(var(--rgb-accent), 0.05)' }}>
-                    
-                    {post.image && (
-                      <div style={{ backgroundColor: 'var(--cozy-bg)' }}>
-                        <img src={post.image} alt={post.title} style={{ width: '100%', maxHeight: '16rem', objectFit: 'contain' }} />
-                      </div>
-                    )}
-                    
-                    <div style={{ padding: '1.5rem' }}>
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(var(--rgb-text), 0.4)', fontWeight: 'bold', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
-                        {new Date(post.createdAt).toLocaleDateString('pt-BR')}
-                      </span>
-                      <h4 style={{ fontSize: '1.25rem', fontWeight: 900, marginBottom: '0.5rem', color: 'var(--cozy-text)' }}>{post.title}</h4>
-                      <p style={{ color: 'rgba(var(--rgb-text), 0.8)', lineHeight: '1.6', fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{post.content}</p>
-                    </div>
-                    
-                  </div>
+                  <PostCard key={post.id} post={post} compact />
                 ))}
               </div>
             )}

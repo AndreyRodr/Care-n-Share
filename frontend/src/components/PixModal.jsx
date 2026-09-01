@@ -19,7 +19,7 @@ const PixModal = ({ ong, onClose }) => {
         <div style={{ position: 'absolute', top: '-6rem', right: '-6rem', width: '12rem', height: '12rem', backgroundColor: 'rgba(var(--rgb-accent), 0.1)', borderRadius: '50%', filter: 'blur(40px)' }}></div>
         <div style={{ position: 'absolute', bottom: '-6rem', left: '-6rem', width: '12rem', height: '12rem', backgroundColor: 'rgba(226, 240, 203, 0.2)', borderRadius: '50%', filter: 'blur(40px)' }}></div>
 
-        <button onClick={onClose} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'rgba(var(--rgb-text), 0.3)', cursor: 'pointer', transition: 'color 0.3s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--cozy-text)'} onMouseOut={(e) => e.currentTarget.style.color = 'rgba(var(--rgb-text), 0.3)'}>
+        <button onClick={onClose} className="btn-icon-ghost" aria-label="Fechar" style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
           <X size={24} />
         </button>
 
@@ -58,6 +58,7 @@ const PixModal = ({ ong, onClose }) => {
               </code>
               <button 
                 onClick={handleCopy}
+                aria-label="Copiar chave PIX"
                 style={{
                   padding: '0.5rem', 
                   borderRadius: '0.75rem', 
@@ -81,9 +82,7 @@ const PixModal = ({ ong, onClose }) => {
 
         <button 
           onClick={onClose}
-          style={{ width: '100%', marginTop: '2.5rem', padding: '1rem', background: 'none', border: 'none', color: 'rgba(var(--rgb-text), 0.4)', fontWeight: 'bold', fontSize: '0.875rem', cursor: 'pointer', transition: 'color 0.3s' }}
-          onMouseOver={(e) => e.currentTarget.style.color = 'var(--cozy-text)'} 
-          onMouseOut={(e) => e.currentTarget.style.color = 'rgba(var(--rgb-text), 0.4)'}
+          className="btn-text-ghost"
         >
           Fechar e continuar navegando
         </button>

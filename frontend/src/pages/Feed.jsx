@@ -1,92 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api.js';
 import { Sparkles, Heart, Users, HeartOff, PlusCircle, Compass, LayoutList } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import PostForm from '../components/PostForm.jsx';
+import PostCard from '../components/PostCard.jsx';
 import OngModal from '../components/OngModal.jsx';
 import PixModal from '../components/PixModal.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
+import usePageTitle from '../hooks/usePageTitle.js';
+import { toast } from '../utils/toast.js';
 
 const Feed = () => {
+  usePageTitle('Feed Solidário');
   const [ongs, setOngs] = useState([]);
   const [userSupports, setUserSupports] = useState([]);
   const [feedPosts, setFeedPosts] = useState([]); // Guarda os posts do feed do usuário
-  const [activeTab, setActiveTab] = useState('explore'); // 'explore' (Descobrir) ou 'feed' (Meu Feed)
+  const user = JSON.parse(localStorage.getItem('user'));
+  // 'explore' (Descobrir ONGs) ou 'feed' (Meu Feed/Meu Mural, dependendo do tipo de conta)
+  const [activeTab, setActiveTab] = useState(user?.type === 'O' ? 'feed' : 'explore');
   const [loading, setLoading] = useState(true);
   const [selectedOng, setSelectedOng] = useState(null);
   const [showPixModal, setShowPixModal] = useState(null);
-  const user = JSON.parse(localStorage.getItem('user'));
+  const [confirmStopOng, setConfirmStopOng] = useState(null);
+  const [supportingId, setSupportingId] = useState(null);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const ongsResponse = await axios.get('http://localhost:3001/api/ongs');
-  //     let ongsData = ongsResponse.data;
-
-  //     if (user) {
-  //       const profileResponse = await axios.get(`http://localhost:3001/api/users/${user.id}`);
-  //       const supportedIds = profileResponse.data.supportedOngs.map(o => o.id);
-  //       setUserSupports(supportedIds);
-
-  //       // --- BUSCAR POSTS DAS ONGS APOIADAS ---
-  //       if (user.type === 'U' && supportedIds.length > 0) {
-  //         try {
-  //           // Cria um array de requisições para buscar os posts de cada ONG apoiada
-  //           const postPromises = supportedIds.map(id => axios.get(`http://localhost:3001/api/posts/ong/${id}`));
-  //           const postResponses = await Promise.all(postPromises);
-            
-  //           // Junta todos os posts e anexa a foto/nome da ONG em cada post
-  //           let posts = postResponses.flatMap((res, index) => {
-  //             const ongId = supportedIds[index];
-  //             const ongInfo = ongsData.find(o => o.id === ongId);
-  //             return res.data.map(post => ({ ...post, ong: ongInfo }));
-  //           });
-            
-  //           console.log(posts);
-            
-
-  //           // Ordena os posts: os mais novos primeiro
-  //           posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //           setFeedPosts(posts);
-  //         } catch (err) {
-  //           console.error('Erro ao buscar posts para o feed', err);
-  //         }
-  //       } else if (user.type === 'O') {
-  //         try {
-  //           const res = await axios.get(`http://localhost:3001/api/posts/ong/${user.id}`);
-  //           const ongInfo = ongsData.find(o => o.id === user.id);
-  //           let myPosts = res.data.map(post => ({ ...post, ong: user }));
-  //           myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  //           console.log(myPosts);
-            
-  //           setFeedPosts(myPosts);
-  //         } catch (err) {
-  //           console.error('Erro ao buscar posts da ONG', err);
-  //         }
-  //       } else {
-  //         setFeedPosts([]);
-  //       }
-
-  //       // --- CALCULAR MATCH SCORE (Recomendações) ---
-  //       if (user.description) {
-  //         const userInterests = user.description.toLowerCase().split(/\W+/).filter(w => w.length > 3);
-  //         ongsData = ongsData.map(ong => {
-  //           let score = 0;
-  //           const ongDesc = (ong.description || '').toLowerCase();
-  //           userInterests.forEach(interest => {
-  //             if (ongDesc.includes(interest)) score++;
-  //           });
-  //           return { ...ong, matchScore: score };
-  //         });
-  //         ongsData.sort((a, b) => b.matchScore - a.matchScore);
-  //       }
-  //     }
-
-  //     setOngs(ongsData);
-  //   } catch (error) {
-  //     console.error('Erro ao buscar dados', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const fetchData = async () => {
     try {
       if (!user) {
@@ -96,27 +33,32 @@ const Feed = () => {
 
       // 1. Execução isolada para usuário ONG
       if (user.type === 'O') {
-        const res = await axios.get(`http://localhost:3001/api/posts/ong/${user.id}`);
-        console.log("Auditoria de Estado - Posts da ONG:", res.data); 
-        
-        const myPosts = res.data.map(post => ({ ...post, ong: user }));
+        const [postsRes, ongsRes] = await Promise.all([
+          api.get(`/api/posts/ong/${user.id}`),
+          api.get('/api/ongs'),
+        ]);
+
+        const myPosts = postsRes.data.map(post => ({ ...post, ong: user }));
         myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
         setFeedPosts(myPosts);
+
+        // Mostra as outras ONGs na aba "Descobrir" (sem contar a própria conta)
+        setOngs(ongsRes.data.filter(ong => ong.id !== user.id));
+
         setLoading(false);
-        return; // Interrompe a função; ONGs não processam o grid inferior
+        return;
       }
 
       // 2. Execução exclusiva para usuário Doador (Tipo 'U')
-      const ongsResponse = await axios.get('http://localhost:3001/api/ongs');
+      const ongsResponse = await api.get('/api/ongs');
       let ongsData = ongsResponse.data;
       
-      const profileResponse = await axios.get(`http://localhost:3001/api/users/${user.id}`);
+      const profileResponse = await api.get(`/api/users/${user.id}`);
       const supportedIds = profileResponse.data.supportedOngs?.map(o => o.id) || [];
       setUserSupports(supportedIds);
 
       if (supportedIds.length > 0) {
-        const postPromises = supportedIds.map(id => axios.get(`http://localhost:3001/api/posts/ong/${id}`));
+        const postPromises = supportedIds.map(id => api.get(`/api/posts/ong/${id}`));
         const postResponses = await Promise.all(postPromises);
         
         let posts = postResponses.flatMap((res, index) => {
@@ -157,22 +99,34 @@ const Feed = () => {
     fetchData();
   }, []);
 
-  const handleToggleSupport = async (e, ong, isSupporting) => {
+  const requestToggleSupport = (e, ong, isSupporting) => {
     e.stopPropagation();
+    if (isSupporting) {
+      setConfirmStopOng(ong);
+      return;
+    }
+    performToggleSupport(ong, false);
+  };
+
+  const performToggleSupport = async (ong, isSupporting) => {
+    setSupportingId(ong.id);
     try {
-      const token = localStorage.getItem('token');
-      const url = `http://localhost:3001/api/ongs/${ong.id}/support`;
+      const url = `/api/ongs/${ong.id}/support`;
       if (isSupporting) {
-        await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
+        await api.delete(url);
+        toast.success(`Você deixou de apoiar ${ong.name}.`);
       } else {
-        await axios.post(url, {}, { headers: { Authorization: `Bearer ${token}` } });
+        await api.post(url, {});
+        toast.success(`Agora você apoia ${ong.name}! 💚`);
         if (ong.pixKey) {
           setShowPixModal(ong);
         }
       }
       fetchData(); // Recarrega os dados (incluindo o feed de posts)
     } catch (error) {
-      alert(error.response?.data?.error || 'Erro ao processar apoio');
+      toast.error(error.response?.data?.error || 'Erro ao processar apoio');
+    } finally {
+      setSupportingId(null);
     }
   };
 
@@ -196,35 +150,33 @@ const Feed = () => {
           )}
         </header>
 
-        {user?.type === 'O' && (
+        {user?.type === 'O' && activeTab === 'feed' && (
           <PostForm onPostCreated={fetchData} />
         )}
 
-        {/* NAVEGAÇÃO DE ABAS PARA USUÁRIOS (Descobrir x Feed) */}
-        {user?.type === 'U' && (
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', borderBottom: '2px solid rgba(var(--rgb-accent), 0.1)', paddingBottom: '1rem' }}>
-            <button 
-              onClick={() => setActiveTab('explore')}
-              style={{
-                padding: '0.75rem 1.5rem', borderRadius: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', cursor: 'pointer', transition: 'all 0.3s',
-                backgroundColor: activeTab === 'explore' ? 'var(--cozy-accent)' : 'transparent',
-                color: activeTab === 'explore' ? 'white' : 'rgba(var(--rgb-text), 0.5)'
-              }}
-            >
-              <Compass size={18} /> Descobrir ONGs
-            </button>
-            <button 
-              onClick={() => setActiveTab('feed')}
-              style={{
-                padding: '0.75rem 1.5rem', borderRadius: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', cursor: 'pointer', transition: 'all 0.3s',
-                backgroundColor: activeTab === 'feed' ? 'var(--cozy-accent)' : 'transparent',
-                color: activeTab === 'feed' ? 'white' : 'rgba(var(--rgb-text), 0.5)'
-              }}
-            >
-              <LayoutList size={18} /> Meu Feed
-            </button>
-          </div>
-        )}
+        {/* NAVEGAÇÃO DE ABAS (rótulos diferentes para Doador e ONG) */}
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', borderBottom: '2px solid rgba(var(--rgb-accent), 0.1)', paddingBottom: '1rem' }}>
+          <button 
+            onClick={() => setActiveTab('explore')}
+            style={{
+              padding: '0.75rem 1.5rem', borderRadius: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', cursor: 'pointer', transition: 'all 0.3s',
+              backgroundColor: activeTab === 'explore' ? 'var(--cozy-accent)' : 'transparent',
+              color: activeTab === 'explore' ? 'white' : 'rgba(var(--rgb-text), 0.5)'
+            }}
+          >
+            <Compass size={18} /> Descobrir ONGs
+          </button>
+          <button 
+            onClick={() => setActiveTab('feed')}
+            style={{
+              padding: '0.75rem 1.5rem', borderRadius: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', cursor: 'pointer', transition: 'all 0.3s',
+              backgroundColor: activeTab === 'feed' ? 'var(--cozy-accent)' : 'transparent',
+              color: activeTab === 'feed' ? 'white' : 'rgba(var(--rgb-text), 0.5)'
+            }}
+          >
+            <LayoutList size={18} /> {user?.type === 'O' ? 'Meu Mural' : 'Meu Feed'}
+          </button>
+        </div>
 
         {loading ? (
           <div style={{display: 'flex', justifyContent: 'center', padding: '4rem'}}>
@@ -233,10 +185,11 @@ const Feed = () => {
         ) : (
           <>
             {/* ABA: DESCOBRIR (Mostra o grid de ONGs) */}
-            {(activeTab === 'explore' || user?.type === 'O') && (
+            {activeTab === 'explore' && (
               <div className="ong-grid">
                 {ongs.map((ong) => {
                   const isSupporting = userSupports.includes(ong.id);
+                  const isProcessing = supportingId === ong.id;
                   return (
                     <div key={ong.id} onClick={() => setSelectedOng(ong)} className="ong-card">
                       <div className="ong-card-image">
@@ -259,11 +212,12 @@ const Feed = () => {
                         <div className="ong-card-footer">
                           {user?.type === 'U' ? (
                             <button 
-                              onClick={(e) => handleToggleSupport(e, ong, isSupporting)} 
+                              onClick={(e) => requestToggleSupport(e, ong, isSupporting)} 
                               className={`btn-support ${isSupporting ? 'active' : 'inactive'}`}
+                              disabled={isProcessing}
                             >
                               {isSupporting ? <HeartOff size={16} /> : <Heart size={16} fill="currentColor" />}
-                              {isSupporting ? 'Parar Apoio' : 'Apoiar'}
+                              {isProcessing ? 'Processando...' : (isSupporting ? 'Parar Apoio' : 'Apoiar')}
                             </button>
                           ) : (
                             <div style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', fontWeight: 'bold', color: 'var(--cozy-accent)', textTransform: 'uppercase'}}>
@@ -282,47 +236,20 @@ const Feed = () => {
               </div>
             )}
 
-            {/* ABA: MEU FEED (Mostra os posts das ONGs apoiadas) */}
-            {/* O Feed de posts é exibido integralmente para ONGs ou na aba 'feed' para Doadores */}
-{(user?.type === 'O' || (user?.type === 'U' && activeTab === 'feed')) && (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '42rem', margin: '0 auto' }}>
-    {feedPosts.length === 0 ? (
-      <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Nenhuma novidade ainda</h3>
-      </div>
-    ) : (
-      feedPosts.map(post => (
-        <div key={post.id} style={{ backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', overflow: 'hidden', border: '1px solid rgba(var(--rgb-accent), 0.05)' }}>
-          
-          {/* Cabeçalho do Post */}
-          <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid var(--cozy-bg)' }}>
-            <img src={post.ong?.profilePicture || `https://ui-avatars.com/api/?name=${post.ong?.name}&background=random&size=150`} alt={post.ong?.name} style={{ width: '3rem', height: '3rem', borderRadius: '1rem', objectFit: 'cover' }} />
-            <div>
-              <h4 style={{ fontWeight: 'bold', margin: '0 0 0.25rem 0', color: 'var(--cozy-text)' }}>{post.ong?.name}</h4>
-              <span style={{ fontSize: '0.75rem', color: 'rgba(var(--rgb-text), 0.4)', fontWeight: 'bold', textTransform: 'uppercase' }}>
-                {new Date(post.createdAt).toLocaleDateString('pt-BR')}
-              </span>
-            </div>
-          </div>
-          
-          {/* Imagem do Post (se existir) */}
-          {post.image && (
-            <div style={{ backgroundColor: 'var(--cozy-bg)' }}>
-              <img src={post.image} alt={post.title} style={{ width: '100%', maxHeight: '24rem', objectFit: 'contain' }} />
-            </div>
-          )}
-
-          {/* Conteúdo do Post */}
-          <div style={{ padding: '2rem' }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem', color: 'var(--cozy-text)' }}>{post.title}</h3>
-            <p style={{ color: 'rgba(var(--rgb-text), 0.8)', lineHeight: '1.8', whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>{post.content}</p>
-          </div>
-          
-        </div>
-      ))
-    )}
-  </div>
-)}
+            {/* ABA: MEU FEED / MEU MURAL */}
+            {activeTab === 'feed' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '42rem', margin: '0 auto' }}>
+                {feedPosts.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Nenhuma novidade ainda</h3>
+                  </div>
+                ) : (
+                  feedPosts.map(post => (
+                    <PostCard key={post.id} post={post} ongName={user?.type === 'U' ? post.ong?.name : undefined} ongAvatar={post.ong?.profilePicture} />
+                  ))
+                )}
+              </div>
+            )}
           </>
         )}
       </main>
@@ -340,6 +267,22 @@ const Feed = () => {
         <PixModal 
           ong={showPixModal} 
           onClose={() => setShowPixModal(null)} 
+        />
+      )}
+
+      {/* Confirmação antes de parar de apoiar */}
+      {confirmStopOng && (
+        <ConfirmDialog
+          title="Parar de apoiar?"
+          message={`Você vai deixar de apoiar ${confirmStopOng.name} e parar de receber as atualizações dessa causa no seu feed.`}
+          confirmLabel="Parar apoio"
+          cancelLabel="Continuar apoiando"
+          onCancel={() => setConfirmStopOng(null)}
+          onConfirm={() => {
+            const ong = confirmStopOng;
+            setConfirmStopOng(null);
+            performToggleSupport(ong, true);
+          }}
         />
       )}
     </div>

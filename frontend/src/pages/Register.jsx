@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Heart, Mail, Lock, User, Camera, ArrowRight, Building2 } from 'lucide-react';
-import axios from 'axios';
+import { Mail, Lock, User, Camera, ArrowRight, Building2 } from 'lucide-react';
+import api from '../services/api.js';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../components/Logo.jsx';
+import usePageTitle from '../hooks/usePageTitle.js';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +13,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  usePageTitle('Criar conta');
 
   const compressImage = (file) => { /* Mantido igual... */
     return new Promise((resolve) => {
@@ -65,7 +68,7 @@ const Register = () => {
         submitData.append('profilePicture', blob, 'profile-pic.jpg');
       }
 
-      await axios.post('http://localhost:3001/api/register', submitData);
+      await api.post('/api/register', submitData);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || 'Erro ao cadastrar. Tente novamente.');
@@ -75,9 +78,34 @@ const Register = () => {
   };
 
   return (
-    <div className="login-wrapper">
+    <div className="auth-layout">
+      <aside className="auth-brand-panel">
+        <Logo variant="stacked" tone="mono" size={40} />
+
+        <p className="auth-brand-tagline">Comece a fazer parte da mudança hoje mesmo.</p>
+
+        <div className="auth-brand-features">
+          <div className="auth-brand-feature">
+            <span className="auth-brand-feature-icon"><User size={20} /></span>
+            Crie sua conta em minutos
+          </div>
+          <div className="auth-brand-feature">
+            <span className="auth-brand-feature-icon"><Building2 size={20} /></span>
+            Perfil de doador ou de ONG
+          </div>
+          <div className="auth-brand-feature">
+            <span className="auth-brand-feature-icon"><Camera size={20} /></span>
+            Personalize com foto e descrição
+          </div>
+        </div>
+      </aside>
+
+      <div className="auth-form-panel">
       <div className="login-card" style={{ maxWidth: '42rem' }}>
         <div className="login-header">
+          <div className="login-icon-wrapper">
+            <Logo size={32} />
+          </div>
           <h1 className="login-title">Criar conta</h1>
           <p className="login-subtitle">Junte-se à nossa comunidade de solidariedade.</p>
         </div>
@@ -169,6 +197,7 @@ const Register = () => {
         <div className="login-footer">
           <p>Já tem conta? <button onClick={() => navigate('/login')}>Faça Login</button></p>
         </div>
+      </div>
       </div>
     </div>
   );
