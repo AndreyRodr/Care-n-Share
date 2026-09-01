@@ -1,6 +1,4 @@
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db as prisma } from '../prisma/db.ts';
 
 export default prisma;
