@@ -58,6 +58,7 @@ class UserController {
       const ongs = await userService.listAllOngs();
       return res.status(200).json(ongs);
     } catch (error) {
+      console.error("ERRO NA ROTA DO FEED:", error);
       return res.status(500).json({ error: error.message });
     }
   }

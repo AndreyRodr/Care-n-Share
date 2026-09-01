@@ -16,20 +16,21 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/orm-postgres": "^8.0.0-rc.8",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.1.1"
+    "multer": "^2.1.1",
+    "pg": "^8.23.0"
   },
   "devDependencies": {
-    "@prisma/cli-engine": "^0.2.3",
     "@types/node": "^26.4.1",
     "nodemon": "^3.1.14",
-    "prisma": "^8.0.0-rc.10"
+    "prisma": "^7.10.0"
   },
   "overrides": {
     "hono": "^4.12.34",
