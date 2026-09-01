@@ -46,9 +46,8 @@ CLOUDINARY_API_SECRET="o_seu_api_secret"
 
 Prepare o banco de dados e gere o cliente do Prisma:
 ```bash
-npx prisma contract emit
-npx prisma migration plan --name dev
-npx prisma db migrate
+npx prisma generate
+npx prisma migrate dev
 ```
 
 Inicie o servidor de desenvolvimento:
