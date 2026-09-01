@@ -15,7 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "6.19.3",
+    "@prisma/client": "^7.10.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
@@ -26,6 +26,12 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
-    "prisma": "6.19.3"
-  }
+    "prisma": "^8.0.0-rc.12"
+  },
+  "overrides": {
+  "hono": "^4.12.34",
+  "@hono/node-server": "^1.19.15",
+  "lodash": "^4.17.24",
+  "valibot": "^1.4.2"
+}
 }
