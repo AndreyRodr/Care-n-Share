@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import userRepository from '../repositories/UserRepository.js';
+import { randomUUID } from 'crypto';
+import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/auth.js';
 
 class UserService {
   /**
@@ -46,9 +48,18 @@ class UserService {
 
     // 3. Gerar Token JWT
     const token = jwt.sign(
-      { id: user.id, type: user.type },
-      process.env.JWT_SECRET || 'secret_hackathon_jacaridade',
-      { expiresIn: '1d' }
+      {
+        type: user.type,
+        tokenVersion: user.tokenVersion
+      },
+      JWT_SECRET,
+      {
+        subject: user.id,
+        jwtid: randomUUID(),
+        expiresIn: JWT_EXPIRES_IN,
+        issuer: 'care-n-share-api',
+        audience: 'care-n-share-web'
+      }
     );
 
     // Retornar dados do usuário (sem senha) e o token
@@ -57,6 +68,10 @@ class UserService {
       user: userWithoutPassword,
       token
     };
+  }
+
+  async logout(userId) {
+  await userRepository.incrementTokenVersion(userId);
   }
 
   /**

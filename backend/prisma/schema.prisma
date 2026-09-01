@@ -16,7 +16,9 @@ model User {
   passwordHash   String
   type           String   // "U" (User) or "O" (ONG)
   pixKey         String?
+  tokenVersion   Int      @default(0)
   createdAt      DateTime @default(now())
+  
 
   supportedOngs  User[]   @relation("SupportRelation")
   supporters     User[]   @relation("SupportRelation")

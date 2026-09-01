@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, UserCircle, ChevronDown } from 'lucide-react';
+import { Heart, LogOut, UserCircle, ChevronDown} from 'lucide-react';
+import axios from 'axios';
 import Logo from './Logo.jsx';
 
 const Navbar = () => {
@@ -19,10 +20,28 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      if (token) {
+        await axios.post(
+          'http://localhost:3001/api/logout',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+      }
+    } finally {
+      // Limpa o navegador mesmo se o token já estiver expirado
+      // ou se houver falha de conexão.
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+    }
   };
 
   const initials = user?.name?.trim()?.charAt(0)?.toUpperCase() || '?';

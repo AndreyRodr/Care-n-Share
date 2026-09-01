@@ -27,6 +27,24 @@ class UserRepository {
       data: updateData
     });
   }
+  
+  /**
+   * Aumenta a versão salva no banco.
+   */
+  async incrementTokenVersion(id) {
+  return await prisma.user.update({
+    where: { id },
+    data: {
+      tokenVersion: {
+        increment: 1
+      }
+    },
+    select: {
+      id: true,
+      tokenVersion: true
+    }
+  });
+}
 
   /**
    * Busca um usuário pelo ID
