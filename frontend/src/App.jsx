@@ -5,6 +5,7 @@ import Feed from './pages/Feed.jsx';
 import Landing from './pages/Landing.jsx';
 import EditProfile from './pages/EditProfile.jsx';
 import Toaster from './components/Toaster.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -26,6 +27,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile/edit" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/" element={<HomeRoute />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
