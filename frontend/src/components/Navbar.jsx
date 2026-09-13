@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, LogOut, UserCircle, ChevronDown, ChartLine} from 'lucide-react';
+import { Heart, LogOut, UserCircle, ChevronDown, ChartLine, HandCoins} from 'lucide-react';
 import axios from 'axios';
 import Logo from './Logo.jsx';
 
@@ -81,6 +81,12 @@ const Navbar = () => {
                 className="navbar-dropdown-item"
               >
                 <ChartLine size={18} /> Estatísticas
+              </button>
+              <button
+                onClick={() => { setMenuOpen(false); navigate('/donations'); }}
+                className="navbar-dropdown-item"
+              >
+                <HandCoins size={18} /> Gerenciar Doações
               </button>
               <button onClick={handleLogout} className="navbar-dropdown-item navbar-dropdown-item--danger">
                 <LogOut size={18} /> Sair
