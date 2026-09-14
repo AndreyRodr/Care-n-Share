@@ -1851,36 +1851,9 @@ h1, h2, h3, h4,
     justify-items: center;
 }
 
-.dashboard-cards-container {
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
-}
 
-.dashboard-card {
-  width: 25rem;
-  border-radius: 1.5rem;
-  height: 13rem;
-  background-color: var(--cozy-card);
-  border: 1px solid rgba(var(--rgb-accent), 0.1);
-  padding: 2rem;
-  display: grid;
-  justify-content: center;
-  text-align: center;
-}
 
-.dashboard-card-icon {
-  display: grid;
-  justify-content: center;
-}
 
-.dashboard-card h1 {
-  color: var(--cozy-accent-dark);
-}
-
-.dashboard-card h1,h2 {
-  margin: 0;
-}
 
 .dashboard-overview-charts-container {
     display: grid;
@@ -1933,7 +1906,7 @@ h1, h2, h3, h4,
     gap: 2rem;
 }
 
-.donations-header {
+.donations-header, .inventory-header {
     display: grid;
     align-items: center;
     justify-content: space-between;
@@ -1953,7 +1926,7 @@ h1, h2, h3, h4,
 }
 
 
-.donations-filters {
+.filters {
     display: grid;
     grid-template-columns: minmax(20rem, 2fr) 1fr 1fr;
     align-items: center;
@@ -1966,12 +1939,12 @@ h1, h2, h3, h4,
     box-sizing: border-box;
 }
 
-.donations-search {
+.filters-search{
     flex: 1;
 }
 
-.donations-search input,
-.donations-filters select {
+.filters-search input,
+.filters select {
     width: 100%;
     height: 2.75rem;
     padding: 0 1rem;
@@ -1986,8 +1959,8 @@ h1, h2, h3, h4,
     transition: border-color 0.2s ease;
 }
 
-.donations-search input:focus,
-.donations-filters select:focus {
+.donations--search input:focus,
+.filters select:focus {
     border-color: var(--cozy-accent);
 }
 
@@ -2106,25 +2079,22 @@ h1, h2, h3, h4,
     gap: 1rem;
 }
 
-.donation-button {
+.donation-button, .register-item-btn {
     padding: 0.65rem 1rem;
-
     border: none;
     border-radius: 0.75rem;
-
     font-weight: 600;
     cursor: pointer;
-
     transition: 0.2s ease;
 }
 
-.donation-button-secondary {
+.button-secondary {
     background-color: var(--cozy-background);
     color: var(--cozy-accent-dark);
     border: 1px solid rgba(var(--rgb-accent), 0.15);
 }
 
-.donation-button-primary {
+.button-primary {
     background-color: var(--cozy-accent);
     color: white;
 }
@@ -2292,4 +2262,157 @@ h1, h2, h3, h4,
     color: var(--cozy-accent-dark);
     font-size: 1.4rem;
     font-weight: bold;
+}
+
+/* =========================================
+   Summary card Modal
+========================================= */
+
+.summary-cards-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.summary-card {
+  width: 25rem;
+  border-radius: 1.5rem;
+  height: 13rem;
+  background-color: var(--cozy-card);
+  border: 1px solid rgba(var(--rgb-accent), 0.1);
+  padding: 2rem;
+  display: grid;
+  justify-content: center;
+  text-align: center;
+}
+
+.summary-card-icon {
+  display: grid;
+  justify-content: center;
+}
+
+.summary-card h1 {
+  color: var(--cozy-accent-dark);
+}
+
+.summary-card h1,h2 {
+  margin: 0;
+}
+
+/* =========================================
+   Inventory Page Modal
+========================================= */
+
+.inventory-main {
+  display: grid;
+}
+.register-item-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  padding: 1rem 2.5rem;
+}
+
+.inventory-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1.5rem;
+    background-color: var(--cozy-card);
+    border: 1px solid rgba(var(--rgb-accent), 0.1);
+    border-radius: 1.25rem;
+    box-sizing: border-box;
+    gap: 1.5rem;
+}
+
+.inventory-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.inventory-card-header h3 {
+    margin: 0;
+    color: var(--cozy-accent-dark);
+    font-size: 1.05rem;
+}
+
+.inventory-card-header p {
+    margin: 0.35rem 0 0;
+    color: var(--cozy-text-secondary);
+    font-size: 0.85rem;
+}
+
+.inventory-card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.inventory-card-quantity,
+.inventory-card-minimum {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.inventory-card-quantity span,
+.inventory-card-minimum span {
+    color: var(--cozy-text-secondary);
+    font-size: 0.8rem;
+}
+
+.inventory-card-quantity strong {
+    color: var(--cozy-accent-dark);
+    font-size: 1.4rem;
+}
+
+.inventory-card-minimum strong {
+    color: var(--cozy-text);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.inventory-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(var(--rgb-accent), 0.1);
+}
+
+.inventory-card-detailsButton {
+    padding: 0.65rem 1rem;
+    border: 1px solid rgba(var(--rgb-accent), 0.2);
+    border-radius: 0.75rem;
+    background-color: transparent;
+    color: var(--cozy-accent-dark);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.inventory-card-detailsButton:hover {
+    background-color: rgba(var(--rgb-accent), 0.08);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 500px) {
+    .inventory-card-header {
+        flex-direction: column;
+    }
+
+    .inventory-card-content {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-card-footer {
+        justify-content: stretch;
+    }
+
+    .inventory-card-detailsButton {
+        width: 100%;
+    }
 }

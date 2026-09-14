@@ -1,4 +1,5 @@
-export default function DonationsFilters({ filters, setFilters }) {
+
+const InventoryFilter = ({ filters, setFilters }) => {
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -10,15 +11,15 @@ export default function DonationsFilters({ filters, setFilters }) {
     }
 
     return (
-        <section className="donations-filters filters">
+        <section className="inventory-filters filters">
 
-            <div className='donations-search filters-search'>
+            <div className='inventory-search filters-search'>
                 <input
                     type="text"
                     name="search"
                     value={filters.search}
                     onChange={handleChange}
-                    placeholder="Buscar doação..."
+                    placeholder="Buscar item..."
                 />
             </div>
 
@@ -28,40 +29,32 @@ export default function DonationsFilters({ filters, setFilters }) {
                 onChange={handleChange}
             >
                 <option value="TODOS">
-                    Todos os status
+                    Todos
                 </option>
 
                 <option value="PENDENTE">
-                    Pendentes
+                    Normal
                 </option>
 
                 <option value="CONCLUIDA">
-                    Concluídas
+                    Estoque Baixo
                 </option>
 
                 <option value="CANCELADA">
-                    Canceladas
+                    Sem estoque
                 </option>
             </select>
 
             <select
-                name="contributionType"
-                value={filters.contributionType}
+                name="category"
+                value={filters.category}
                 onChange={handleChange}
             >
-                <option value="TODOS">
-                    Todos os tipos
-                </option>
-
-                <option value="ITEM">
-                    Itens
-                </option>
-
-                <option value="VOLUNTARIADO">
-                    Voluntariado
-                </option>
+                // TODO fazer mock de categorias
             </select>
 
         </section>
     );
 }
+
+export default InventoryFilter
