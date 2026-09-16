@@ -32,15 +32,15 @@ const InventoryFilter = ({ filters, setFilters }) => {
                     Todos
                 </option>
 
-                <option value="PENDENTE">
+                <option value="NORMAL">
                     Normal
                 </option>
 
-                <option value="CONCLUIDA">
+                <option value="ESTOQUE_BAIXO">
                     Estoque Baixo
                 </option>
 
-                <option value="CANCELADA">
+                <option value="SEM_ESTOQUE">
                     Sem estoque
                 </option>
             </select>

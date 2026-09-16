@@ -14,7 +14,7 @@ export default function InventoryCard({
 
             <div className="inventory-card-content">
                 <div className="inventory-card-quatity">
-                    <span>Estoque atual</span>
+                    <span>Estoque atual: </span>
 
                     <strong>
                         {item.quantity} {item.unit}
@@ -22,7 +22,7 @@ export default function InventoryCard({
                 </div>
 
                 <div className="inventory-card-minimum">
-                    <span>Estoque mínimo</span>
+                    <span>Estoque mínimo: </span>
 
                     <strong>
                         {item.minimumQuantity} {item.unit}

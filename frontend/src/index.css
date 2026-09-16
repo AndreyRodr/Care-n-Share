@@ -2353,7 +2353,8 @@ h1, h2, h3, h4,
 .inventory-card-quantity,
 .inventory-card-minimum {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    /* flex-direction: column; */
     gap: 0.35rem;
 }
 
