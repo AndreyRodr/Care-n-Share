@@ -29,7 +29,25 @@ export const mockInventory = [
         quantity: 80,
         unit: "kg",
         minimumQuantity: 20,
-        status: "NORMAL"
+        status: "NORMAL",
+        movements: [
+            {
+                id: 1,
+                type: "ENTRADA",
+                quantity: 30,
+                unit: "kg",
+                reason: "Doação #42",
+                createdAt: "2026-09-15"
+            },
+            {
+                id: 2,
+                type: "SAIDA",
+                quantity: 10,
+                unit: "kg",
+                reason: "Uso interno",
+                createdAt: "2026-09-14"
+            }
+        ]
     },
     {
         id: 2,

@@ -8,15 +8,15 @@ export default function DonationDetails({
 
     return (
         <div
-            className="donation-overlay"
+            className="modal-overlay"
             onClick={onClose}
         >
             <div
-                className="donation-modal"
+                className="modal-container"
                 onClick={(event) => event.stopPropagation()}
             >
 
-                <div className="donation-modal-header">
+                <div className="modal-header">
                     <div>
                         <h2>Detalhes da doação</h2>
 
@@ -26,7 +26,7 @@ export default function DonationDetails({
                     </div>
 
                     <button
-                        className="donation-modal-close-btn"
+                        className="modal-close-btn"
                         onClick={onClose}
                     >
                         ×

@@ -30,6 +30,11 @@ export default function useOngInventory() {
             matchesStatus
         );
     });
+
+    function getItemById(id) {
+        return inventory.find((item) => item.id === id);
+    }
+
     /**
      * Registra uma movimentação de entrada ou saída do estoque.
      * 
@@ -50,10 +55,32 @@ export default function useOngInventory() {
                     movement.type === "ENTRADA"
                         ? item.quantity + movement.quantity
                         : item.quantity - movement.quantity;
+                
+                let newStatus = "NORMAL";
+
+                if (newQuantity === 0) {
+                    newStatus = "SEM_ESTOQUE";
+                } else if (newQuantity < item.minimumQuantity) {
+                    newStatus = "ESTOQUE_BAIXO"
+                }
+
+                const newMoviment = {
+                    id: Date.now(),
+                    type: movement.type,
+                    quantity: movement.quantity,
+                    unit: item.unit,
+                    reason: movement.reason,
+                    createdAt: new Date().toISOString().split("T")[0]
+                }
 
                 return {
                     ...item,
-                    quantity: newQuantity
+                    quantity: newQuantity,
+                    status: newStatus,
+                    movements: [
+                        newMoviment,
+                        ...(item.movements || [])
+                    ]
                 };
             })
         );
@@ -93,10 +120,12 @@ export default function useOngInventory() {
 
     return {
         inventory: filteredInventory,
+        // categories,
         filters,
         setFilters,
         addMovement,
         updateItem,
-        deleteItem
+        deleteItem,
+        getItemById
     };
 }

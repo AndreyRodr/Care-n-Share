@@ -1,3 +1,4 @@
+import { mockInventoryCategories } from "../../mocks/inventory";
 
 const InventoryFilter = ({ filters, setFilters }) => {
 
@@ -50,7 +51,17 @@ const InventoryFilter = ({ filters, setFilters }) => {
                 value={filters.category}
                 onChange={handleChange}
             >
-                // TODO fazer mock de categorias
+                <option value='TODOS'>
+                    Todas as categorias
+                </option>
+                {mockInventoryCategories.map((category) => (
+                    <option
+                        key={category.id}
+                        value={category.name}    
+                    >
+                        {category.name}
+                    </option>
+                ))}
             </select>
 
         </section>

@@ -2,6 +2,9 @@ import Navbar from '../components/Navbar'
 import SummaryCard from '../components/SummaryCard'
 import InventoryFilter from '../components/InventoryComponents/InventoryFilter'
 import InventoryCard from '../components/InventoryComponents/InventoryCards';
+import InventoryDetails from '../components/InventoryComponents/InventoryDetails';
+import InventoryMovement from '../components/InventoryComponents/InventoryMovement';
+import { useState } from 'react';
 
 import useOngInventory from '../hooks/useOngInventory';
 
@@ -9,13 +12,30 @@ import useOngInventory from '../hooks/useOngInventory';
 const InventoryManager = () => {
 
     const {
-            inventory,
-            filters,
-            setFilters,
-            addMovement,
-            updateItem,
-            deleteItem
-        } = useOngInventory();
+        inventory,
+        // categories,
+        filters,
+        setFilters,
+        addMovement,
+        getItemById
+    } = useOngInventory();
+    
+    const [selectedItemId, setSelectedItemId] = useState(null);
+    const [movementItemId, setMovementItemId] = useState(null)
+
+    const selectedItem = getItemById(selectedItemId);
+    const movementItem = getItemById(movementItemId);
+
+    function handleMovement(movement) {
+        if (!movementItemId) return;
+        
+        addMovement(
+            selectedItemId,
+            movement
+        );
+
+        setMovementItemId(null);
+    }
 
     return(
         <div>
@@ -42,12 +62,23 @@ const InventoryManager = () => {
                         key={item.id}
                         item={item} 
                         onDetails={(item) => {
-                            console.log("Item selecionado:", item);
+                            setSelectedItemId(item.id)
                         }}
                     />
                     ))}
                 </div>
+                
+                <InventoryDetails 
+                    item={selectedItem}
+                    onClose={() => setSelectedItemId(null)}
+                    onMovement={(item) => setMovementItemId(item.id)}
+                />
 
+                <InventoryMovement
+                    item={movementItem}
+                    onClose={() => setMovementItemId(null)}
+                    onSubmit={handleMovement}
+                />
             </div>
         </div>
     )

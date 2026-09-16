@@ -755,6 +755,47 @@ h1, h2, h3, h4,
   background-color: rgba(var(--rgb-text), 0.6);
   backdrop-filter: blur(4px);
 }
+
+.modal-container {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  background-color: var(--cozy-card);
+  border: 1px solid rgba(var(--rgb-accent), 0.1);
+  border-radius: 1.5rem;
+  box-sizing: border-box;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--cozy-accent-dark);
+}
+
+.modal-header p {
+    margin: 0.35rem 0 0;
+    color: var(--cozy-text-secondary);
+    font-size: 0.9rem;
+}
+
+.modal-close-btn {
+  border: none;
+  background: transparent;
+  color: var(--cozy-text-secondary);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .ong-modal-container {
   background-color: var(--cozy-card);
   width: 100%;
@@ -1937,6 +1978,7 @@ h1, h2, h3, h4,
     border: 1px solid rgba(var(--rgb-accent), 0.1);
     border-radius: 1.5rem;
     box-sizing: border-box;
+    cursor: pointer;
 }
 
 .filters-search{
@@ -1962,12 +2004,6 @@ h1, h2, h3, h4,
 .donations--search input:focus,
 .filters select:focus {
     border-color: var(--cozy-accent);
-}
-
-
-.filters select {
-    width: 12rem;
-    cursor: pointer;
 }
 
 .donations-list {
@@ -2183,26 +2219,6 @@ h1, h2, h3, h4,
    Donation modal style
 ========================================= */
 
-.donation-overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    background-color: rgba(0, 0, 0, 0.35);
-    z-index: 1000;
-}
-
-.donation-modal {
-    width: 100%;
-    max-width: 600px;
-    background-color: var(--cozy-card);
-    border: 1px solid rgba(var(--rgb-accent), 0.1);
-    border-radius: 1.5rem;
-    padding: 2rem;
-    box-sizing: border-box;
-}
 
 .donation-modal-header {
     display: flex;
@@ -2300,17 +2316,28 @@ h1, h2, h3, h4,
 }
 
 /* =========================================
-   Inventory Page Modal
+   Inventory Page Style
 ========================================= */
 
 .inventory-main {
   display: grid;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.5rem 3rem;
+  box-sizing: border-box;
+  gap: 2rem;
 }
 .register-item-btn-container {
   width: 100%;
   display: flex;
   justify-content: end;
   padding: 1rem 2.5rem;
+}
+
+.inventory-list {
+  display: grid;
+  gap: 1rem;
 }
 
 .inventory-card {
@@ -2354,7 +2381,6 @@ h1, h2, h3, h4,
 .inventory-card-minimum {
     display: flex;
     align-items: center;
-    /* flex-direction: column; */
     gap: 0.35rem;
 }
 
@@ -2416,4 +2442,209 @@ h1, h2, h3, h4,
     .inventory-card-detailsButton {
         width: 100%;
     }
+}
+
+/* =========================================
+   Inventory Modal Style
+========================================= */
+
+.inventory-detail-modal {
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    background-color: var(--cozy-card);
+    border: 1px solid rgba(var(--rgb-accent), 0.1);
+    border-radius: 1.5rem;
+    box-sizing: border-box;
+}
+
+.inventory-detail-modal-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.inventory-detail-modal-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem;
+    background-color: var(--cozy-background);
+    border-radius: 1rem;
+}
+
+.inventory-detail-modal-summary span {
+    color: var(--cozy-text-secondary);
+    font-size: 0.8rem;
+}
+
+.inventory-detail-modal-summary strong {
+    color: var(--cozy-accent-dark);
+    font-size: 1.25rem;
+}
+
+.inventory-detail-modal-history {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(var(--rgb-accent), 0.1);
+}
+
+.inventory-detail-modal-history h3 {
+    margin: 0 0 1rem;
+    color: var(--cozy-accent-dark);
+    font-size: 1rem;
+}
+
+.inventory-detail-modal-emptyHistory {
+    margin: 0;
+    color: var(--cozy-text-secondary);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 500px) {
+    .inventory-detail-modal-modal {
+        padding: 1.5rem;
+    }
+
+    .inventory-detail-modal-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   Inventory Movement History Style
+========================================= */
+
+.inventory-mov-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.inventory-mov-modal-field label {
+    color: var(--cozy-text);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.inventory-mov-modal-field input,
+.inventory-mov-modal-field select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(var(--rgb-accent), 0.2);
+    border-radius: 0.75rem;
+    background-color: var(--cozy-background);
+    color: var(--cozy-text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.inventory-mov-modal-field input:focus,
+.inventory-mov-modal-field select:focus {
+    border-color: var(--cozy-accent);
+}
+
+.inventory-mov-modal-available {
+    margin: -0.25rem 0 1.25rem;
+    color: var(--cozy-text-secondary);
+    font-size: 0.85rem;
+}
+
+.inventory-mov-modal-available strong {
+    color: var(--cozy-accent-dark);
+}
+
+.inventory-mov-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.inventory-mov-modal-cancel-btn,
+.inventory-mov-modal-submit-btn {
+    padding: 0.7rem 1rem;
+    border-radius: 0.75rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.inventory-mov-modal-cancel-btn {
+    border: 1px solid rgba(var(--rgb-accent), 0.2);
+    background-color: transparent;
+    color: var(--cozy-accent-dark);
+}
+
+.inventory-mov-modal-submit-btn {
+    border: none;
+    background-color: var(--cozy-accent);
+    color: var(--cozy-card);
+}
+
+.inventory-mov-modal-submit-btn:hover,
+.inventory-mov-modal-cancel-btn:hover {
+    transform: translateY(-1px);
+}
+
+@media (max-width: 500px) {
+    .inventory-mov-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .inventory-mov-modal-cancel-btn,
+    .inventory-mov-modal-submit-btn {
+        width: 100%;
+    }
+}
+
+.inventory-detail-modal-move-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 2rem;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: var(--cozy-accent);
+    color: var(--cozy-card);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.inventory-detail-modal-move-btn:hover {
+    transform: translateY(-1px);
+}
+
+.movement {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(var(--rgb-accent), 0.1);
+}
+
+.movement strong {
+    color: var(--cozy-accent-dark);
+    font-size: 0.95rem;
+}
+
+.movement p {
+    margin: 0.3rem 0 0;
+    color: var(--cozy-text-secondary);
+    font-size: 0.85rem;
+}
+
+.movement > span {
+    color: var(--cozy-text-secondary);
+    font-size: 0.8rem;
+    white-space: nowrap;
 }
