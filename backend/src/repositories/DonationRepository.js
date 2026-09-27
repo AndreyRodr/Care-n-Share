@@ -2,113 +2,123 @@ import prisma from '../config/database.js';
 
 class DonationRepository {
   async create(data) {
-    return await prisma.donation.create({
+    return await prisma.donationCheckin.create({
       data,
       include: {
         donor: { select: { id: true, name: true, email: true } },
-        ong: { select: { id: true, name: true, email: true } },
-        goal: { select: { id: true, title: true } }
+        project: { select: { id: true, title: true } }
       }
     });
   }
 
-  async update(id, data) {
-    return await prisma.donation.update({
-      where: { id },
-      data,
-      include: {
-        donor: { select: { id: true, name: true, email: true } },
-        goal: { select: { id: true, title: true } }
+  async findAll(ongId, { search, status, contributionType }) {
+    const whereCondition = { ongId };
+
+    if (search) {
+      whereCondition.OR = [
+        { donor: { name: { contains: search, mode: 'insensitive' } } },
+        { itemName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    if (status) {
+      const statusMap = {
+        PENDENTE: 'PENDING',
+        PENDING: 'PENDING',
+        CONCLUIDA: 'CHECKED_IN',
+        CHECKED_IN: 'CHECKED_IN',
+        CANCELADO: 'CANCELLED',
+        CANCELLED: 'CANCELLED'
+      };
+      if (statusMap[status.toUpperCase()]) {
+        whereCondition.status = statusMap[status.toUpperCase()];
       }
-    });
-  }
+    }
 
-  async findAllByOng({ ongId, search, status, contributionType }) {
-    const where = {
-      ongId,
-      ...(status && { status }),
-      ...(contributionType && { contributionType }),
-      ...(search && {
-        donor: {
-          nome: { contains: search, mode: 'insensitive' }
-        }
-      })
-    };
+    if (contributionType) {
+      whereCondition.type = contributionType.toUpperCase();
+    }
 
-    return await prisma.donation.findMany({
-      where,
+    return await prisma.donationCheckin.findMany({
+      where: whereCondition,
       include: {
-        donor: {
-          select: { id: true, nome: true }
-        },
-        meta: {
-          select: { id: true, titulo: true }
-        }
+        donor: { select: { id: true, name: true } },
+        project: { select: { id: true, title: true } }
       },
       orderBy: { createdAt: 'desc' }
     });
   }
 
   async findById(id, ongId) {
-    return await prisma.donation.findFirst({
+    return await prisma.donationCheckin.findFirst({
       where: { id, ongId },
       include: {
-        donor: {
-          select: { id: true, name: true }
-        },
-        goal: {
-          select: { id: true, title: true }
-        }
+        donor: { select: { id: true, name: true, email: true } },
+        project: { select: { id: true, title: true } },
+        validatedBy: { select: { id: true, name: true } }
       }
     });
   }
 
-  async completeDonation(donation) {
-    const completedAt = new Date();
+  async update(id, ongId, data) {
+    return await prisma.donationCheckin.updateMany({
+      where: { id, ongId },
+      data
+    });
+  }
+
+  async complete(id, ongId) {
+    const donation = await prisma.donationCheckin.findFirst({ where: { id, ongId } });
+    if (!donation) throw new Error('NOT_FOUND');
+    if (donation.status !== 'PENDING') throw new Error('NOT_PENDING');
 
     return await prisma.$transaction(async (tx) => {
-      const updatedDonation = await tx.doacao.update({
-        where: { id: donation.id },
+      const updated = await tx.donationCheckin.update({
+        where: { id },
         data: {
-          status: 'CONCLUIDA',
-          completedAt
+          status: 'CHECKED_IN',
+          checkedInAt: new Date(),
+          validatedById: ongId
         }
       });
 
-      if (donation.metaId) {
-        await tx.meta.update({
-          where: { id: donation.metaId },
-          data: {
-            quantidadeAtual: { increment: donation.quantidade }
+      await tx.ongInventory.upsert({
+        where: {
+          ongId_itemName_unit: {
+            ongId: donation.ongId,
+            itemName: donation.itemName,
+            unit: donation.unit
           }
-        });
-      }
-
-      await tx.notificacao.create({
-        data: {
-          usuarioId: donation.donorId,
-          titulo: 'Doação Concluída',
-          mensagem: 'Sua doação foi recebida com sucesso pela ONG!'
+        },
+        update: {
+          quantity: { increment: donation.quantity }
+        },
+        create: {
+          ongId: donation.ongId,
+          itemName: donation.itemName,
+          category: donation.category,
+          unit: donation.unit,
+          quantity: donation.quantity
         }
       });
 
-      return updatedDonation;
+      return updated;
     });
   }
 
-  async cancelDonation(id, reason) {
-    return await prisma.donation.update({
+  async cancel(id, ongId) {
+    const donation = await prisma.donationCheckin.findFirst({ where: { id, ongId } });
+    if (!donation) throw new Error('NOT_FOUND');
+
+    return await prisma.donationCheckin.update({
       where: { id },
-      data: {
-        status: 'CANCELADA',
-        cancelReason: reason
-      }
+      data: { status: 'CANCELLED' }
     });
   }
 
-  async delete(id) {
-    return await prisma.donation.delete({
-      where: { id }
+  async delete(id, ongId) {
+    return await prisma.donationCheckin.deleteMany({
+      where: { id, ongId }
     });
   }
 }

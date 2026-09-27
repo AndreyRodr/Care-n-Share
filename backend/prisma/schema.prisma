@@ -6,109 +6,133 @@ datasource db {
   provider = "postgresql"
 }
 
-enum DonationStatus {
-  PENDENTE
-  CONCLUIDA
-  CANCELADA
-}
-
-enum ContributionType {
-  ITEM
-  VOLUNTARIADO
-  MONETARIA
-}
-
 model User {
-  id             String   @id @default(uuid())
-  name           String
-  email          String   @unique
-  profilePicture String?
-  description    String?
-  passwordHash   String
-  type           String   // "U" (User/Doador) ou "O" (ONG)
-  pixKey         String?
-  tokenVersion   Int      @default(0)
-  createdAt      DateTime @default(now())
+  id                     String   @id @default(uuid())
+  name                   String
+  email                  String   @unique
+  profilePicture         Bytes?   @db.ByteA
+  profilePictureMimeType String?
+  description            String?
+  passwordHash           String
+  type                   String // "U" (User) or "O" (ONG)
+  pixKey                 String?
+  tokenVersion           Int      @default(0)
+  createdAt              DateTime @default(now())
 
-  // Relacionamentos Sociais Existentes
+  // Relação de seguidores: um usuário pode seguir várias ONGs e uma ONG
+  // pode possuir vários seguidores. O campo `type` diferencia usuário (U) de ONG (O).
   supportedOngs User[] @relation("SupportRelation")
   supporters    User[] @relation("SupportRelation")
 
-  // Relacionamentos do Sistema
-  posts             Post[]         @relation("UserPosts")
-  goals             Goal[]         @relation("OngGoals")
-  donationsMade     Donation[]     @relation("DonorDonations")
-  donationsReceived Donation[]     @relation("OngDonations")
-  notifications     Notification[]
-  activities        Activity[]
+  // Causas de interesse do usuário, usadas também para recomendações de ONGs/projetos.
+  interestedCauses Cause[] @relation("UserCauses")
+
+  posts    Post[]    @relation("UserPosts")
+  projects Project[] @relation("OngProjects")
+
+  donationsMade     DonationCheckin[] @relation("DonationDonor")
+  donationsReceived DonationCheckin[] @relation("DonationOng")
+  validatedCheckins DonationCheckin[] @relation("DonationValidator")
+  inventoryItems    OngInventory[]    @relation("OngInventory")
 }
 
 model Post {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  image     String?
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  title         String
+  content       String
+  image         Bytes?   @db.ByteA
+  imageMimeType String?
+  createdAt     DateTime @default(now())
 
   ongId String
-  ong   User   @relation("UserPosts", fields: [ongId], references: [id], onDelete: Cascade)
+  ong   User   @relation("UserPosts", fields: [ongId], references: [id])
 }
 
-model Goal {
-  id              String     @id @default(uuid())
-  title           String
-  description     String?
-  image           String?
-  targetQuantity  Float
-  currentQuantity Float      @default(0)
-  deadline        DateTime?
-  status          String     @default("ATIVA")
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-
-  ongId String
-  ong   User       @relation("OngGoals", fields: [ongId], references: [id], onDelete: Cascade)
-  donations Donation[]
-}
-
-model Donation {
-  id               String           @id @default(uuid())
-  quantity         Float
-  contributionType ContributionType @default(ITEM)
-  status           DonationStatus   @default(PENDENTE)
-  description      String?
-  cancelReason     String?
-  completedAt      DateTime?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-
-  donorId String
-  donor   User   @relation("DonorDonations", fields: [donorId], references: [id])
-
-  ongId String
-  ong   User   @relation("OngDonations", fields: [ongId], references: [id])
-
-  goalId String?
-  goal   Goal?   @relation(fields: [goalId], references: [id])
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  title     String
-  message   String
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Activity {
+model Cause {
   id          String   @id @default(uuid())
-  type        String
-  description String
+  name        String   @unique
+  description String?
   createdAt   DateTime @default(now())
 
+  interestedUsers User[]    @relation("UserCauses")
+  projects        Project[] @relation("ProjectCauses")
+}
+
+model Project {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  image         Bytes?   @db.ByteA
+  imageMimeType String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Todo projeto é criado por uma ONG (usuário cujo type é O).
   ongId String
-  ong   User   @relation(fields: [ongId], references: [id], onDelete: Cascade)
+  ong   User   @relation("OngProjects", fields: [ongId], references: [id])
+
+  // Um projeto pode atender várias causas, e uma causa pode estar em vários projetos.
+  causes Cause[] @relation("ProjectCauses")
+
+  donationCheckins DonationCheckin[]
+}
+
+enum DonationCheckinStatus {
+  PENDING
+  CHECKED_IN
+  CANCELLED
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  MONEY
+  PIX
+}
+
+model DonationCheckin {
+  id          String                @id @default(uuid())
+  itemName    String
+  category    String
+  quantity    Decimal               @db.Decimal(12, 3)
+  type        TransactionType
+  unit        String
+  status      DonationCheckinStatus @default(PENDING)
+  checkedInAt DateTime?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  donorId String
+  donor   User   @relation("DonationDonor", fields: [donorId], references: [id])
+
+  ongId String
+  ong   User   @relation("DonationOng", fields: [ongId], references: [id])
+
+  // Usuário da ONG que confirmou o recebimento físico da doação.
+  validatedById String?
+  validatedBy   User?   @relation("DonationValidator", fields: [validatedById], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  @@index([ongId, status])
+  @@index([donorId])
+  @@map("Doacoes_Checkin")
+}
+
+model OngInventory {
+  id              String   @id @default(uuid())
+  itemName        String
+  category        String
+  unit            String
+  quantity        Decimal  @default(0) @db.Decimal(12, 3)
+  minimumQuantity Decimal  @default(0) @db.Decimal(12, 3)
+  updatedAt       DateTime @updatedAt
+
+  ongId String
+  ong   User   @relation("OngInventory", fields: [ongId], references: [id])
+
+  // Um item é único por ONG e unidade de medida.
+  @@unique([ongId, itemName, unit])
+  @@map("Estoque_ONG")
 }
