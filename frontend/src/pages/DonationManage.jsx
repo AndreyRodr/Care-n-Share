@@ -1,10 +1,9 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar"
-import DonationsList from "../components/DonationList"
-import DonationsFilters from "../components/DonationFilters";
-import DonationDetails from "../components/DonationDetail";
-import DonationConfirmation from "../components/DonationConfirm";
-
+import DonationsList from "../components/DonationComponents/DonationList"
+import DonationsFilters from "../components/DonationComponents/DonationFilters";
+import DonationDetails from "../components/DonationComponents/DonationDetail";
+import DonationConfirmation from "../components/DonationComponents/DonationConfirm";
 import useOngDonations from "../hooks/useOngDonation";
 
 

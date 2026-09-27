@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import SummaryCard from "../components/SummaryCard";
 import { FaBoxArchive } from "react-icons/fa6";
 import { IoPeople } from "react-icons/io5";
 import { FaClock } from "react-icons/fa6";
@@ -82,10 +83,10 @@ const Dashboard = () => {
         <div>
             <Navbar />
             <div className="dashboard-main">
-                <div className="dashboard-cards-container">
-                    <DashboardCard icon={<FaBoxArchive />} number='327' text='Itens' />
-                    <DashboardCard icon={<IoPeople />} number='84' text='Doadores' />
-                    <DashboardCard icon={<FaClock />} number='126' text='Horas' />
+                <div className="summary-cards-container">
+                    <SummaryCard icon={<FaBoxArchive />} number='327' text='Itens' />
+                    <SummaryCard icon={<IoPeople />} number='84' text='Doadores' />
+                    <SummaryCard icon={<FaClock />} number='126' text='Horas' />
                 </div>
             </div>
             <div className="dashboard-overview-charts-container">

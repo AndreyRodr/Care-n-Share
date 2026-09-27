@@ -10,9 +10,9 @@ export default function DonationsFilters({ filters, setFilters }) {
     }
 
     return (
-        <section className="donations-filters">
+        <section className="donations-filters filters">
 
-            <div className='donations-search'>
+            <div className='donations-search filters-search'>
                 <input
                     type="text"
                     name="search"

@@ -52,7 +52,7 @@ export default function DonationCard({
                 <div className="donation-action">
 
                     <button
-                        className="donation-button donation-button-secondary"
+                        className="donation-button button-secondary"
                         onClick={() => onDetails(donation)}
                     >
                         Ver detalhes
@@ -60,7 +60,7 @@ export default function DonationCard({
 
                     {donation.status === "PENDENTE" && (
                         <button
-                            className="donation-button donation-button-primary"
+                            className="donation-button button-primary"
                             onClick={() => onConfirm(donation)}
                         >
                             Confirmar recebimento
