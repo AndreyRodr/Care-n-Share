@@ -16,9 +16,12 @@ router.get('/dashboard/volunteers', ongDashboardController.getVolunteers);
 router.get('/dashboard/activity', ongDashboardController.getActivity);
 
 // --- Doações ---
+router.post('/donations', donationController.create);
 router.get('/donations', donationController.getAll);
 router.get('/donations/:id', donationController.getById);
+router.put('/donations/:id', donationController.update);
 router.patch('/donations/:id/complete', donationController.complete);
 router.patch('/donations/:id/cancel', donationController.cancel);
+router.delete('/donations/:id', donationController.delete);
 
 export default router;
