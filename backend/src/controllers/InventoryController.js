@@ -1,76 +1,131 @@
 import inventoryRepository from '../repositories/InventoryRepository.js';
 
 class InventoryController {
-  async create(req, res) {
+  async listItems(req, res) {
     try {
-      const { itemName, category, unit, quantity, minimumQuantity } = req.body;
       const ongId = req.user.id;
+      const { search, category, status } = req.query;
+      const items = await inventoryRepository.findAllItems(ongId, { search, category, status });
+      return res.status(200).json({ items });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 
-      const item = await inventoryRepository.create({
+  async getItem(req, res) {
+    try {
+      const { id } = req.params;
+      const ongId = req.user.id;
+      const item = await inventoryRepository.findItemById(id, ongId);
+      if (!item) return res.status(404).json({ error: 'Item não encontrado.' });
+      return res.status(200).json(item);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  async createItem(req, res) {
+    try {
+      const ongId = req.user.id;
+      const { itemName, category, unit, quantity, minimumQuantity } = req.body;
+
+      if (!itemName || !category || !unit) {
+        return res.status(400).json({ error: 'Os campos itemName, category e unit são obrigatórios.' });
+      }
+
+      const item = await inventoryRepository.createItem(ongId, {
         itemName,
         category,
         unit,
         quantity,
-        minimumQuantity,
-        ongId
+        minimumQuantity
       });
 
       return res.status(201).json(item);
     } catch (error) {
-      return res.status(400).json({ error: 'Erro ao adicionar item ao estoque.' });
+      return res.status(400).json({ error: error.message });
     }
   }
 
-  async getAll(req, res) {
+  async updateItem(req, res) {
     try {
-      const ongId = req.user.id;
-      const items = await inventoryRepository.findByOng(ongId);
-      return res.status(200).json(items);
-    } catch (error) {
-      return res.status(400).json({ error: 'Erro ao listar itens do estoque.' });
-    }
-  }
-
-  async getById(req, res) {
-    try {
-      const ongId = req.user.id;
       const { id } = req.params;
+      const ongId = req.user.id;
+      const { itemName, category, unit, minimumQuantity } = req.body;
 
-      const item = await inventoryRepository.findById(id, ongId);
-      if (!item) return res.status(404).json({ error: 'Item do estoque não encontrado.' });
+      const updated = await inventoryRepository.updateItem(id, ongId, {
+        itemName,
+        category,
+        unit,
+        minimumQuantity
+      });
 
-      return res.status(200).json(item);
+      if (!updated) return res.status(404).json({ error: 'Item não encontrado.' });
+      return res.status(200).json(updated);
     } catch (error) {
-      return res.status(400).json({ error: 'Erro ao buscar item do estoque.' });
+      return res.status(400).json({ error: error.message });
     }
   }
 
-  async update(req, res) {
+  async deleteItem(req, res) {
     try {
-      const ongId = req.user.id;
       const { id } = req.params;
-      const { itemName, category, unit, quantity, minimumQuantity } = req.body;
-
-      const result = await inventoryRepository.update(id, ongId, { itemName, category, unit, quantity, minimumQuantity });
+      const ongId = req.user.id;
+      const result = await inventoryRepository.deleteItem(id, ongId);
       if (result.count === 0) return res.status(404).json({ error: 'Item não encontrado.' });
-
-      return res.status(200).json({ message: 'Estoque atualizado com sucesso.' });
+      return res.status(204).send();
     } catch (error) {
-      return res.status(400).json({ error: 'Erro ao atualizar estoque.' });
+      return res.status(500).json({ error: error.message });
     }
   }
 
-  async delete(req, res) {
+  async listMovements(req, res) {
     try {
-      const ongId = req.user.id;
       const { id } = req.params;
+      const ongId = req.user.id;
+      const { type, startDate, endDate, page, limit } = req.query;
 
-      const result = await inventoryRepository.delete(id, ongId);
-      if (result.count === 0) return res.status(404).json({ error: 'Item não encontrado.' });
+      const data = await inventoryRepository.findMovements(id, ongId, {
+        type,
+        startDate,
+        endDate,
+        page,
+        limit
+      });
 
-      return res.status(200).json({ message: 'Item removido do estoque.' });
+      if (!data) return res.status(404).json({ error: 'Item não encontrado.' });
+      return res.status(200).json(data);
     } catch (error) {
-      return res.status(400).json({ error: 'Erro ao excluir item do estoque.' });
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  async createMovement(req, res) {
+    try {
+      const { id } = req.params;
+      const ongId = req.user.id;
+      const userId = req.user.id;
+      const { type, quantity, reason } = req.body;
+
+      if (!type || !['ENTRADA', 'SAIDA'].includes(type)) {
+        return res.status(400).json({ error: "O tipo de movimentação deve ser 'ENTRADA' ou 'SAIDA'." });
+      }
+
+      if (!quantity || quantity <= 0) {
+        return res.status(400).json({ error: 'A quantidade deve ser maior que zero.' });
+      }
+
+      if (!reason) {
+        return res.status(400).json({ error: 'O motivo da movimentação é obrigatório.' });
+      }
+
+      const result = await inventoryRepository.createMovement(ongId, id, userId, { type, quantity, reason });
+      return res.status(201).json(result);
+    } catch (error) {
+      if (error.code) {
+        return res.status(error.code).json({ error: error.message });
+      }
+      return res.status(500).json({ error: error.message });
     }
   }
 }

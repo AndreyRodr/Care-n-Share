@@ -22,7 +22,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/ong', ongRoutes);
-app.use('/api/inventory', inventoryRoutes);
+app.use('/api/ong/inventory', inventoryRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/causes', causeRoutes);
 

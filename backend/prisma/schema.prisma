@@ -34,6 +34,7 @@ model User {
   donationsReceived DonationCheckin[] @relation("DonationOng")
   validatedCheckins DonationCheckin[] @relation("DonationValidator")
   inventoryItems    OngInventory[]    @relation("OngInventory")
+  inventoryMovements InventoryMovement[]
 }
 
 model Post {
@@ -120,6 +121,11 @@ model DonationCheckin {
   @@map("Doacoes_Checkin")
 }
 
+enum MovementType {
+  ENTRADA
+  SAIDA
+}
+
 model OngInventory {
   id              String   @id @default(uuid())
   itemName        String
@@ -131,8 +137,25 @@ model OngInventory {
 
   ongId String
   ong   User   @relation("OngInventory", fields: [ongId], references: [id])
+  movements InventoryMovement[]
 
-  // Um item é único por ONG e unidade de medida.
   @@unique([ongId, itemName, unit])
   @@map("Estoque_ONG")
+}
+
+model InventoryMovement {
+  id              String        @id @default(uuid())
+  inventoryItemId String
+  userId          String?
+  type            MovementType
+  quantity        Decimal       @db.Decimal(12, 3)
+  unit            String
+  reason          String
+  donationId      String?
+  createdAt       DateTime      @default(now())
+
+  inventoryItem   OngInventory  @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  user            User?         @relation(fields: [userId], references: [id])
+
+  @@map("Movimentacao_Estoque")
 }

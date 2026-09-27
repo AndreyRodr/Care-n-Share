@@ -300,44 +300,178 @@ paths:
   # ==========================================
   # CONTROLE DE ESTOQUE
   # ==========================================
-  /api/inventory:
+  /api/ong/inventory:
     get:
-      summary: Listar itens em estoque da ONG
+      summary: Listar itens do inventário da ONG
       tags:
-        - Estoque
+        - Inventário
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Busca pelo nome do item (itemName)
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filtra por categoria
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [NORMAL, ESTOQUE_BAIXO, SEM_ESTOQUE]
+          description: Filtra pelo status calculado do estoque
       responses:
         '200':
-          description: Inventário retornado.
+          description: Lista de itens do estoque.
+          content:
+            application/json:
+              example:
+                items:
+                  - id: "uuid-item-1"
+                    itemName: "Ração para cães"
+                    category: "ALIMENTAÇÃO"
+                    unit: "kg"
+                    quantity: 80
+                    minimumQuantity: 20
+                    status: "NORMAL"
 
     post:
-      summary: Adicionar manualmente um item ao estoque
+      summary: Cadastrar item no inventário
       tags:
-        - Estoque
+        - Inventário
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InventoryInput'
+              type: object
+              required:
+                - itemName
+                - category
+                - unit
+              properties:
+                itemName:
+                  type: string
+                  example: "Ração para cães"
+                category:
+                  type: string
+                  example: "ALIMENTAÇÃO"
+                unit:
+                  type: string
+                  example: "kg"
+                quantity:
+                  type: number
+                  example: 50
+                minimumQuantity:
+                  type: number
+                  example: 20
       responses:
         '201':
-          description: Item adicionado ao estoque.
+          description: Item cadastrado.
 
-  /api/inventory/{id}:
+  /api/ong/inventory/{id}:
     get:
-      summary: Buscar item do estoque por ID
+      summary: Detalhes do item com histórico recente de movimentações
       tags:
-        - Estoque
+        - Inventário
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/PathId'
       responses:
         '200':
-          description: Item localizado.
+          description: Dados do item.
+        '404':
+          description: Item não encontrado.
 
-    put:
-      summary: Atualizar quantidades ou dados do item no estoque
+    patch:
+      summary: Atualizar dados cadastrais do item
       tags:
-        - Estoque
+        - Inventário
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemName:
+                  type: string
+                category:
+                  type: string
+                unit:
+                  type: string
+                minimumQuantity:
+                  type: number
+      responses:
+        '200':
+          description: Item atualizado com sucesso.
+
+    delete:
+      summary: Remover item do inventário
+      tags:
+        - Inventário
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: Item removido.
+
+  /api/ong/inventory/{id}/movements:
+    get:
+      summary: Listar histórico de movimentações do item
+      tags:
+        - Movimentações de Estoque
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [ENTRADA, SAIDA]
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Histórico retornado com paginação.
+
+    post:
+      summary: Registrar entrada ou saída de estoque
+      tags:
+        - Movimentações de Estoque
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/PathId'
       requestBody:
@@ -345,21 +479,30 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InventoryInput'
+              type: object
+              required:
+                - type
+                - quantity
+                - reason
+              properties:
+                type:
+                  type: string
+                  enum: [ENTRADA, SAIDA]
+                  example: "ENTRADA"
+                quantity:
+                  type: number
+                  example: 10
+                reason:
+                  type: string
+                  example: "Doação recebida #42"
       responses:
-        '200':
-          description: Estoque atualizado.
-
-    delete:
-      summary: Excluir item do estoque
-      tags:
-        - Estoque
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      responses:
-        '200':
-          description: Item deletado do inventário.
-
+        '201':
+          description: Movimentação criada e estoque atualizado.
+        '400':
+          description: Quantidade menor ou igual a zero / Dados inválidos.
+        '409':
+          description: Conflito - Estoque insuficiente para saída.
+          
   # ==========================================
   # USUARIOS
   # ==========================================
