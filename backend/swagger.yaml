@@ -636,6 +636,21 @@ paths:
         '404':
           description: Usuário não encontrado.
 
+  /api/users/me:
+    get:
+      summary: Obter perfil a partir do TOKEN
+      tags:
+        - Usuários & Autenticação
+      responses:
+        '200':
+          description: Dados do perfil.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          description: Usuário não encontrado.
+
   /api/users/logout:
     post:
       summary: Encerrar sessão (Logout)

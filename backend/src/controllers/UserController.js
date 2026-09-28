@@ -136,6 +136,16 @@ class UserController {
       return res.status(404).json({ error: error.message });
     }
   }
+
+  async getMe(req, res) {
+    try {
+      const { id } = req.user;
+      const user = await userService.getUserProfile(id);
+      return res.status(200).json(user);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+  }
 }
 
 export default new UserController();
