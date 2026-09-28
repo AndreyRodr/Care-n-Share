@@ -10,8 +10,7 @@ model User {
   id                     String   @id @default(uuid())
   name                   String
   email                  String   @unique
-  profilePicture         Bytes?   @db.ByteA
-  profilePictureMimeType String?
+  profilePicture         String?
   description            String?
   passwordHash           String
   type                   String // "U" (User) or "O" (ONG)
@@ -41,8 +40,7 @@ model Post {
   id            String   @id @default(uuid())
   title         String
   content       String
-  image         Bytes?   @db.ByteA
-  imageMimeType String?
+  image         String?
   createdAt     DateTime @default(now())
 
   ongId String
@@ -63,8 +61,7 @@ model Project {
   id            String   @id @default(uuid())
   title         String
   description   String
-  image         Bytes?   @db.ByteA
-  imageMimeType String?
+  image         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
