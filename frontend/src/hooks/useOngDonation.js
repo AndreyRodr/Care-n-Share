@@ -4,6 +4,8 @@ import {
     completeDonation
 } from "../services/ongDonationsService";
 import { mockDonations } from "../mocks/donations";
+import api from "../services/api";
+
 
 
 export default function useOngDonations() {
@@ -13,8 +15,8 @@ export default function useOngDonations() {
 
     const [filters, setFilters] = useState({
         search: "",
-        status: "TODOS",
-        contributionType: "TODOS"
+        status: "ALL",
+        contributionType: "ALL"
     });
 
     useEffect(() => {
@@ -22,26 +24,20 @@ export default function useOngDonations() {
     }, [filters]);
 
     async function loadDonations() {
-        // try {
-        //     setLoading(true);
-        //     setError(null);
+        try {
+            setLoading(true);
+            setError(null);
 
-        //     const data = await getOngDonations(filters);
+            const data = await getOngDonations(filters);
 
-        //     setDonations(data);
-        // } catch (error) {
-        //     setError("Não foi possível carregar as doações.");
-        // } finally {
-        //     setLoading(false);
-        // }
+            setDonations(data);
+        } catch (error) {
+            setError("Não foi possível carregar as doações.");
+        } finally {
+            setLoading(false);
+        }
 
         setLoading(true);
-
-        // Simula o tempo de resposta da API
-        setTimeout(() => {
-            setDonations(mockDonations);
-            setLoading(false);
-        }, 500);
     }
 
     const filteredDonations = donations.filter(donation => {

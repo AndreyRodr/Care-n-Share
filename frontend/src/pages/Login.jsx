@@ -16,7 +16,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await api.post('/api/login', { email, password });
+      const response = await api.post('/api/users/login', { email, password });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/', { replace: true });

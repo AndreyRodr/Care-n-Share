@@ -95,7 +95,7 @@ const EditProfile = () => {
         submitData.append('profilePicture', blob, 'profile-pic.jpg');
       }
 
-      const response = await api.put('/api/me', submitData);
+      const response = await api.put('/api/users/me', submitData);
 
       localStorage.setItem('user', JSON.stringify(response.data));
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso! Redirecionando... ✨' });

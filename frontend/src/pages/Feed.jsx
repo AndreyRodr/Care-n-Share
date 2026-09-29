@@ -35,7 +35,7 @@ const Feed = () => {
       if (user.type === 'O') {
         const [postsRes, ongsRes] = await Promise.all([
           api.get(`/api/posts/ong/${user.id}`),
-          api.get('/api/ongs'),
+          api.get('/api/users/ongs'),
         ]);
 
         const myPosts = postsRes.data.map(post => ({ ...post, ong: user }));
@@ -50,10 +50,10 @@ const Feed = () => {
       }
 
       // 2. Execução exclusiva para usuário Doador (Tipo 'U')
-      const ongsResponse = await api.get('/api/ongs');
+      const ongsResponse = await api.get('/api/users/ongs');
       let ongsData = ongsResponse.data;
       
-      const profileResponse = await api.get(`/api/users/${user.id}`);
+      const profileResponse = await api.get(`/api/users/users/${user.id}`);
       const supportedIds = profileResponse.data.supportedOngs?.map(o => o.id) || [];
       setUserSupports(supportedIds);
 
