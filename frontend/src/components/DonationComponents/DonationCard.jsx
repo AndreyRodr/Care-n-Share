@@ -13,7 +13,7 @@ export default function DonationCard({
                     <h3>{donation.donor.name}</h3>
 
                     <p>
-                        Meta: {donation.goal.title}
+                        Meta: {donation.itemName}
                     </p>
                 </div>
                 <DonationStatusBadge

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar"
 import DonationsList from "../components/DonationComponents/DonationList"
 import DonationsFilters from "../components/DonationComponents/DonationFilters";
@@ -20,7 +20,6 @@ const DonationManage = () => {
     
     const [selectedDonation, setSelectedDonation] = useState(null);
     const [donationToConfirm, setDonationToConfirm] = useState(null);
-    
     function handleConfirm() {
         if (!donationToConfirm) return;
     

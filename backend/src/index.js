@@ -27,7 +27,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/causes', causeRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Jacaridade API is running');
+  res.send('Care n Share API is running');
 });
 
 app.listen(port, () => {

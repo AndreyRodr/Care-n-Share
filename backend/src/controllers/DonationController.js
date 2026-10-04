@@ -1,3 +1,4 @@
+import { log } from 'node:console';
 import donationRepository from '../repositories/DonationRepository.js';
 
 class DonationController {
@@ -30,6 +31,7 @@ class DonationController {
       const { search, status, contributionType } = req.query;
 
       const donations = await donationRepository.findAll(ongId, { search, status, contributionType });
+      
       return res.status(200).json(donations);
     } catch (error) {
       console.error('Erro ao buscar doações:', error);
