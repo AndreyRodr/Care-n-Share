@@ -1,12 +1,28 @@
+import { useEffect } from "react"
+import useOngMovement from "../../hooks/useOngMovements"
 
 export default function InventoryDetails({
     item,
     onClose,
     onMovement
 }) {
+
+    const {
+        movements,
+        setItem
+    } = useOngMovement();
+
+    useEffect(() => {
+        if(!item) return 
+        setItem(item)
+        console.log(movements);
+        
+    }, [item, movements])
+
     if(!item) {
         return null
     }
+
 
     return (
         <div 
@@ -19,7 +35,7 @@ export default function InventoryDetails({
             >
                 <div className="modal-header">
                     <div>
-                        <h2>{item.name}</h2>
+                        <h2>{item.itemName}</h2>
                         <p>{item.category}</p>
                     </div>
 
@@ -56,11 +72,11 @@ export default function InventoryDetails({
                 <div className="inventory-detail-modal-history">
                     <h3>Histórico de Movimentações</h3>
 
-                    {(item.movements || []).length === 0 ? (
+                    {(movements.movements || []).length === 0 ? (
                     <p className="inventory-detail-modal-emptyHistory">
                         Nenhuma movimentação Registrada.
                     </p>
-                    ) : (item.movements.map((move) => (
+                    ) : (movements.movements.map((move) => (
                         <div
                             key={move.id}
                             className="movement"

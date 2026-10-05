@@ -4,7 +4,7 @@ import InventoryFilter from '../components/InventoryComponents/InventoryFilter'
 import InventoryCard from '../components/InventoryComponents/InventoryCards';
 import InventoryDetails from '../components/InventoryComponents/InventoryDetails';
 import InventoryMovement from '../components/InventoryComponents/InventoryMovement';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import useOngInventory from '../hooks/useOngInventory';
 
@@ -13,7 +13,6 @@ const InventoryManager = () => {
 
     const {
         inventory,
-        // categories,
         filters,
         setFilters,
         addMovement,
@@ -37,6 +36,23 @@ const InventoryManager = () => {
         setMovementItemId(null);
     }
 
+    // Conta quantos itens estão com estoque abaixo do desejado
+    function stockCountHandle () {
+        let items = [] 
+        inventory.filter((item) => {
+            if(item.status === "ESTOQUE BAIXO") {
+                items.push(item)
+            }
+        })
+
+        return items.length
+    }
+
+    // useEffect(() => {
+    //     console.log(inventory);
+        
+    // }, [inventory])
+
     return(
         <div>
             <Navbar />
@@ -49,8 +65,8 @@ const InventoryManager = () => {
                     <button className="register-item-btn button-primary">Registrar movimentação</button>
                 </div>
                 <div className="summary-cards-container">
-                    <SummaryCard number={12} text="Itens cadastrados"/>
-                    <SummaryCard number={3} text="Estoque baixo"/>
+                    <SummaryCard number={inventory.length} text="Itens cadastrados"/>
+                    <SummaryCard number={stockCountHandle()} text="Estoque baixo"/>
                     <SummaryCard number={28} text="Movimentações"/>
                 </div>
                 <InventoryFilter

@@ -7,7 +7,7 @@ export default function InventoryCard({
         <article className="inventory-card">
             <div className="inventory-card-header">
                 <div>
-                    <h3>{item.name}</h3>
+                    <h3>{item.itemName}</h3>
                     <p>{item.category}</p>
                 </div>
             </div>
