@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, LogOut, UserCircle, ChevronDown, ChartLine, HandCoins} from 'lucide-react';
 import api from '../services/api.js';
 import Logo from './Logo.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -21,14 +22,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await api.post('/api/users/logout');
-    } catch {
-      // Mesmo se a sessão já tiver expirado, o navegador deve voltar ao login.
-    } finally {
-      localStorage.removeItem('user');
-      navigate('/login');
-    }
+    await logout();
   };
 
   const initials = user?.name?.trim()?.charAt(0)?.toUpperCase() || '?';

@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const Footer = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem('user');
-
+  const { isAuthenticated } = useAuth();
+  
   return (
     <footer className="site-footer">
       <div className="site-footer-container">

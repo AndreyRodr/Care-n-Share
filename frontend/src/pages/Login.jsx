@@ -4,8 +4,10 @@ import api from '../services/api.js';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const Login = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +19,7 @@ const Login = () => {
     setError('');
     try {
       const response = await api.post('/api/users/login', { email, password });
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      login(response.data.user);
       navigate('/', { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || 'Erro ao realizar login. Tente novamente.');
