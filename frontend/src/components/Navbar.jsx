@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, LogOut, UserCircle, ChevronDown, ChartLine, HandCoins} from 'lucide-react';
-import axios from 'axios';
+import api from '../services/api.js';
 import Logo from './Logo.jsx';
 
 const Navbar = () => {
@@ -21,24 +21,11 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
-
     try {
-      if (token) {
-        await axios.post(
-          'http://localhost:3001/api/logout',
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-      }
+      await api.post('/api/users/logout');
+    } catch {
+      // Mesmo se a sessão já tiver expirado, o navegador deve voltar ao login.
     } finally {
-      // Limpa o navegador mesmo se o token já estiver expirado
-      // ou se houver falha de conexão.
-      localStorage.removeItem('token');
       localStorage.removeItem('user');
       navigate('/login');
     }

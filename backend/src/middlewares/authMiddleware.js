@@ -1,20 +1,14 @@
 import jwt from 'jsonwebtoken';
 import userRepository from '../repositories/UserRepository.js';
-import { JWT_SECRET } from '../config/auth.js';
+import { AUTH_COOKIE_NAME, JWT_SECRET } from '../config/auth.js';
 
 const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies?.[AUTH_COOKIE_NAME];
 
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Token não fornecido' });
-  }
-
-  const [scheme, token] = authHeader.split(' ');
-
-  if (!token || !/^Bearer$/i.test(scheme)) {
-    return res.status(401).json({ error: 'Token malformatado' });
-  }
-
+  if (!token) {
+    return res.status(401).json({ error: 'Sessão não encontrada' });
+  } 
+  
   try {
     const decoded = jwt.verify(token, JWT_SECRET, {
       issuer: 'care-n-share-api',

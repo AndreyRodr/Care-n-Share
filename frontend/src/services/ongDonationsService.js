@@ -1,57 +1,25 @@
-import getToken from "../utils/getToken";
+import api from './api.js';
 
-export async function getOngDonations(filters) {
-    const params = new URLSearchParams();
+export async function getOngDonations(filters = {}) {
+  const params = {};
 
-    if (filters.search) {
-        params.append("search", filters.search);
-    }
+  if (filters.search) {
+    params.search = filters.search;
+  }
 
-    if (filters.status !== "ALL") {
-        params.append("status", filters.status);
-    }
+  if (filters.status && filters.status !== 'ALL') {
+    params.status = filters.status;
+  }
 
-    if (filters.contributionType !== "ALL") {
-        params.append(
-            "contributionType",
-            filters.contributionType
-        );
-    }
-    const token = getToken()
+  if (filters.contributionType && filters.contributionType !== 'ALL') {
+    params.type = filters.contributionType;
+  }
 
-    const response = await fetch( 
-        `/api/ong/donations?${params.toString()}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-    const data  = await response.json()
-
-    if (!response.ok) {
-        throw new Error("Erro ao buscar doações");
-    }
-
-    return data;
+  const response = await api.get('/api/ong/donations', { params });
+  return response.data;
 }
 
 export async function completeDonation(id) {
-
-    const token = getToken()
-    const response = await fetch(
-        `/api/ong/donations/${id}/complete`,
-        {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error("Erro ao confirmar doação");
-    }
-
-    return response.json();
+  const response = await api.patch(`/api/ong/donations/${id}/complete`);
+  return response.data;
 }
