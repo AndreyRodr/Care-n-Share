@@ -1,3 +1,4 @@
+import getToken from "../utils/getToken";
 
 export async function getOngDonations(filters) {
     const params = new URLSearchParams();
@@ -6,33 +7,45 @@ export async function getOngDonations(filters) {
         params.append("search", filters.search);
     }
 
-    if (filters.status !== "TODOS") {
+    if (filters.status !== "ALL") {
         params.append("status", filters.status);
     }
 
-    if (filters.contributionType !== "TODOS") {
+    if (filters.contributionType !== "ALL") {
         params.append(
             "contributionType",
             filters.contributionType
         );
     }
+    const token = getToken()
 
-    const response = await fetch(
-        `/api/ong/donations?${params.toString()}`
+    const response = await fetch( 
+        `/api/ong/donations?${params.toString()}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
     );
+    const data  = await response.json()
 
     if (!response.ok) {
         throw new Error("Erro ao buscar doações");
     }
 
-    return response.json();
+    return data;
 }
 
 export async function completeDonation(id) {
+
+    const token = getToken()
     const response = await fetch(
         `/api/ong/donations/${id}/complete`,
         {
-            method: "PATCH"
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
     );
 

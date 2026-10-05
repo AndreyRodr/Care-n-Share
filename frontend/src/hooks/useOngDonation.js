@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import {
     getOngDonations,
-    completeDonation
+    completeDonation,
 } from "../services/ongDonationsService";
-import { mockDonations } from "../mocks/donations";
-
 
 export default function useOngDonations() {
     const [donations, setDonations] = useState([]);
@@ -13,8 +11,8 @@ export default function useOngDonations() {
 
     const [filters, setFilters] = useState({
         search: "",
-        status: "TODOS",
-        contributionType: "TODOS"
+        status: "ALL",
+        contributionType: "ALL",
     });
 
     useEffect(() => {
@@ -22,68 +20,54 @@ export default function useOngDonations() {
     }, [filters]);
 
     async function loadDonations() {
-        // try {
-        //     setLoading(true);
-        //     setError(null);
+        try {
+            setLoading(true);
+            setError(null);
 
-        //     const data = await getOngDonations(filters);
-
-        //     setDonations(data);
-        // } catch (error) {
-        //     setError("Não foi possível carregar as doações.");
-        // } finally {
-        //     setLoading(false);
-        // }
-
-        setLoading(true);
-
-        // Simula o tempo de resposta da API
-        setTimeout(() => {
-            setDonations(mockDonations);
+            const data = await getOngDonations(filters);
+            setDonations(data);
+        } catch (error) {
+            setError("Não foi possível carregar as doações.");
+        } finally {
             setLoading(false);
-        }, 500);
+        }
+
+        // setLoading(true);
     }
 
-    const filteredDonations = donations.filter(donation => {
+    const filteredDonations = donations.filter((donation) => {
+        const search = filters.search.toLowerCase();
+
         const matchesSearch =
-            donation.donor.name
-                .toLowerCase()
-                .includes(filters.search.toLowerCase()) ||
-            donation.goal.title
-                .toLowerCase()
-                .includes(filters.search.toLowerCase()) ||
-            donation.description
-                .toLowerCase()
-                .includes(filters.search.toLowerCase());
+            !search ||
+            donation.donor?.name?.toLowerCase().includes(search) ||
+            donation.project?.title?.toLowerCase().includes(search) ||
+            donation.itemName?.toLowerCase().includes(search);
 
         const matchesStatus =
-            filters.status === "TODOS" ||
+            filters.status === "ALL" ||
             donation.status === filters.status;
 
         const matchesType =
-            filters.contributionType === "TODOS" ||
-            donation.contributionType === filters.contributionType;
+            filters.contributionType === "ALL" ||
+            donation.type === filters.contributionType;
 
-        return (
-            matchesSearch &&
-            matchesStatus &&
-            matchesType
-        );
+        return matchesSearch && matchesStatus && matchesType;
     });
-
+    
     async function confirmDonation(id) {
         try {
             await completeDonation(id);
 
-            setDonations(current =>
-                current.map(donation =>
+            setDonations((current) =>
+                current.map((donation) =>
                     donation.id === id
                         ? {
                             ...donation,
-                            status: "CONCLUIDA"
+                            status: "CONCLUIDA",
                         }
-                        : donation
-                )
+                        : donation,
+                ),
             );
         } catch (error) {
             console.error(error);
@@ -96,6 +80,6 @@ export default function useOngDonations() {
         error,
         filters,
         setFilters,
-        confirmDonation
+        confirmDonation,
     };
 }

@@ -68,7 +68,7 @@ const Register = () => {
         submitData.append('profilePicture', blob, 'profile-pic.jpg');
       }
 
-      await api.post('/api/register', submitData);
+      await api.post('/api/users/register', submitData);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || 'Erro ao cadastrar. Tente novamente.');

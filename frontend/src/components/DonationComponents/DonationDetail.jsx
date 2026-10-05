@@ -45,7 +45,7 @@ export default function DonationDetails({
                     <div>
                         <span>Meta</span>
                         <strong>
-                            {donation.goal.title}
+                            {donation.itemName}
                         </strong>
                     </div>
 
@@ -59,10 +59,10 @@ export default function DonationDetails({
                     </div>
 
                     <div>
-                        <span>Descrição</span>
+                        {/* <span>Descrição</span>
                         <strong>
                             {donation.description}
-                        </strong>
+                        </strong> */}
                     </div>
 
                     {donation.contributionType === "ITEM" && (
