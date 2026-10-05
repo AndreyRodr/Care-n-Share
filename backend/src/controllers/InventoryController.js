@@ -4,7 +4,6 @@ class InventoryController {
   async listItems(req, res) {
     try {
       const ongId = req.user.id;
-      console.log(ongId);
       
       const { search, category, status } = req.query;
       const items = await inventoryRepository.findAllItems(ongId, { search, category, status });

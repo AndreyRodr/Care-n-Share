@@ -15,9 +15,8 @@ export default function InventoryDetails({
     useEffect(() => {
         if(!item) return 
         setItem(item)
-        console.log(movements);
         
-    }, [item, movements])
+    }, [item])
 
     if(!item) {
         return null

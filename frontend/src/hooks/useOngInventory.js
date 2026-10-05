@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getOngInventory } from "../services/inventoryService";
-import { getOngMovementsById } from "../services/movementService";
+import { postOngMovement } from "../services/movementService";
 
 export default function useOngInventory() {
     const [filters, setFilters] = useState({
@@ -59,47 +59,27 @@ export default function useOngInventory() {
      * @param {number} movement.quantity - Quantidade movimentada.
      * @return {void}
     */
-    function addMovement(id, movement) {
+    async function addMovement(id, movement) {
+    try {
+        const updatedItem = await postOngMovement(id, movement);
+
+        console.log("RETORNO DA API:", updatedItem);
+        
         setInventory((current) =>
-            current.map((item) => {
-                if (item.id !== id) {
-                    return item;
-                }
-
-                const newQuantity =
-                    movement.type === "ENTRADA"
-                        ? item.quantity + movement.quantity
-                        : item.quantity - movement.quantity;
-                
-                let newStatus = "NORMAL";
-
-                if (newQuantity === 0) {
-                    newStatus = "SEM_ESTOQUE";
-                } else if (newQuantity < item.minimumQuantity) {
-                    newStatus = "ESTOQUE_BAIXO"
-                }
-
-                const newMoviment = {
-                    id: Date.now(),
-                    type: movement.type,
-                    quantity: movement.quantity,
-                    unit: item.unit,
-                    reason: movement.reason,
-                    createdAt: new Date().toISOString().split("T")[0]
-                }
-
-                return {
-                    ...item,
-                    quantity: newQuantity,
-                    status: newStatus,
-                    movements: [
-                        newMoviment,
-                        ...(item.movements || [])
-                    ]
-                };
-            })
+            current.map((item) =>
+                item.id === id
+                    ? updatedItem.item
+                    : item
+            )
         );
+
+        return updatedItem;
+
+    } catch (error) {
+        console.error("Erro ao adicionar movimentação:", error);
+        throw error;
     }
+}
 
     /**
      * Atualiza os dados de um item no inventário.

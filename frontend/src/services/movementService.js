@@ -19,3 +19,34 @@ export async function getOngMovementsById(id) {
 
     return data
 }
+
+export async function postOngMovement(id, movement) {
+    const token = getToken()
+    try {
+        const response = await fetch(
+            `/api/ong/inventory/${id}/movements`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    type: movement.type,
+                    quantity: Number(movement.quantity),
+                    reason: movement.reason,
+                })
+            }
+        )
+
+        if (!response.ok) {
+            throw new Error("Erro ao registrar movimentação");
+        }
+
+        return response.json()
+    } catch (err) {
+        console.error(err)
+    }
+
+}

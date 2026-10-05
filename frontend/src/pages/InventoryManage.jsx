@@ -48,11 +48,6 @@ const InventoryManager = () => {
         return items.length
     }
 
-    // useEffect(() => {
-    //     console.log(inventory);
-        
-    // }, [inventory])
-
     return(
         <div>
             <Navbar />
