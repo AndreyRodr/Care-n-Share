@@ -13,7 +13,8 @@ class UserRepository {
         profilePicture: userData.profilePicture,
         description: userData.description,
         passwordHash: userData.passwordHash,
-        type: userData.type
+        type: userData.type,
+        pixKey: userData.pixKey
       }
     });
   }

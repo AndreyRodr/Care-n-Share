@@ -5,7 +5,7 @@ class InventoryController {
     try {
       const ongId = req.user.id;
       
-      const { search, category, status } = req.query;
+      const { search, category, status } = req.validatedQuery;
       const items = await inventoryRepository.findAllItems(ongId, { search, category, status });
       return res.status(200).json({ items });
     } catch (error) {
@@ -84,7 +84,7 @@ class InventoryController {
     try {
       const { id } = req.params;
       const ongId = req.user.id;
-      const { type, startDate, endDate, page, limit } = req.query;
+      const { type, startDate, endDate, page, limit } = req.validatedQuery;
 
       const data = await inventoryRepository.findMovements(id, ongId, {
         type,
