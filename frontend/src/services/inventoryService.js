@@ -1,35 +1,20 @@
-import getToken from "../utils/getToken";
+import api from './api.js';
 
-export async function getOngInventory(filters) {
-    const params = new URLSearchParams();
-    
-    if (filters.search) {
-        params.append("search", filters.search);
-    }
+export async function getOngInventory(filters = {}) {
+  const params = {};
 
-    if (filters.category !== "TODOS") {
-        params.append("category", filters.category);
-    }
-    
-    if (filters.status !== "TODOS") {
-        params.append("category", filters.category);
-    }
+  if (filters.search) {
+    params.search = filters.search;
+  }
 
-    const token = getToken();
+  if (filters.category && filters.category !== 'TODOS') {
+    params.category = filters.category;
+  }
 
-    const response = await fetch(
-        `/api/ong/inventory${params.toString()}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error("Erro ao buscar inventário");
-    }
+  if (filters.status && filters.status !== 'TODOS') {
+    params.status = filters.status;
+  }
 
-    return data
+  const response = await api.get('/api/ong/inventory', { params });
+  return response.data;
 }
-

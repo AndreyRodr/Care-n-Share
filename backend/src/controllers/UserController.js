@@ -1,6 +1,11 @@
 import userService from '../services/UserService.js';
 import userRepository from '../repositories/UserRepository.js';
 import { uploadImage } from '../config/cloudinary.js';
+import {
+  AUTH_COOKIE_BASE_OPTIONS,
+  AUTH_COOKIE_NAME,
+  AUTH_COOKIE_OPTIONS
+} from '../config/auth.js';
 
 class UserController {
   /**
@@ -34,8 +39,11 @@ class UserController {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const result = await userService.login(email, password);
-      return res.status(200).json(result);
+      const { token, user } = await userService.login(email, password);
+
+      res.cookie(AUTH_COOKIE_NAME, token, AUTH_COOKIE_OPTIONS);
+
+      return res.status(200).json({ user });
     } catch (error) {
       return res.status(401).json({ error: error.message });
     }
@@ -44,6 +52,8 @@ class UserController {
   async logout(req, res) {
     try {
       await userService.logout(req.user.id);
+
+      res.clearCookie(AUTH_COOKIE_NAME, AUTH_COOKIE_BASE_OPTIONS);
 
       return res.status(204).send();
     } catch (error) {

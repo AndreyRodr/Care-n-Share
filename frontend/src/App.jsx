@@ -8,19 +8,24 @@ import Toaster from './components/Toaster.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import DonationManage from './pages/DonationManage.jsx';
 import InventoryManage from './pages/InventoryManage.jsx';
+import { useEffect } from 'react';
 
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = !!localStorage.getItem('user');
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 // Visitante vê a landing page; quem já está logado cai direto no feed.
 const HomeRoute = () => {
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = !!localStorage.getItem('user');
   return isAuthenticated ? <Feed /> : <Landing />;
 };
 
 function App() {
+  useEffect(() => {
+    localStorage.removeItem('token');
+  }, []);
+
   return (
     <Router>
       <div className="app-wrapper">

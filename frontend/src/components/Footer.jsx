@@ -4,7 +4,7 @@ import Logo from './Logo.jsx';
 
 const Footer = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = !!localStorage.getItem('user');
 
   return (
     <footer className="site-footer">
