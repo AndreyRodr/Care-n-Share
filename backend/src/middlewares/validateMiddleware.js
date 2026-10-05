@@ -15,7 +15,11 @@ const validate = (schema, target = 'body') => {
     }
 
     // Usa os dados validados e normalizados pelo schema.
-    req[target] = result.data;
+    if (target === 'query') {
+      req.validatedQuery = result.data;
+    } else {
+      req[target] = result.data;
+    }
 
     return next();
   };

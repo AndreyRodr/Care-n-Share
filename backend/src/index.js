@@ -30,6 +30,16 @@ app.get('/', (req, res) => {
   res.send('Care n Share API is running');
 });
 
+app.use((error, req, res, next) => {
+  if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
+    return res.status(400).json({
+      error: 'JSON inválido no corpo da requisição.'
+    });
+  }
+
+  return next(error);
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log(`Swagger UI disponível em http://localhost:${port}/api-docs`);

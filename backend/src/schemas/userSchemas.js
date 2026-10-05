@@ -64,3 +64,36 @@ export const loginSchema = z
       .max(24, 'A senha deve ter no máximo 24 caracteres.')
   })
   .strict();
+
+export const updateProfileSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(3, 'O nome deve ter pelo menos 3 caracteres.')
+      .max(120, 'O nome deve ter no máximo 120 caracteres.')
+      .optional(),
+
+    email: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .email('Informe um e-mail válido.')
+      .max(254, 'O e-mail é muito longo.')
+      .optional(),
+
+    description: optionalText,
+
+    pixKey: z
+      .string()
+      .trim()
+      .max(140, 'A chave PIX deve ter no máximo 140 caracteres.')
+      .optional()
+      .or(z.literal(''))
+      .transform((value) => value || undefined)
+  })
+  .strict()
+  .refine(
+    (data) => Object.values(data).some((value) => value !== undefined),
+    { message: 'Envie ao menos um campo para atualizar.' }
+  );
