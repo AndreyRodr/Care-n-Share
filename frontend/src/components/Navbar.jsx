@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -33,7 +33,21 @@ const Navbar = () => {
         <div className="navbar-logo" onClick={() => navigate('/')}>
           <Logo variant="horizontal" size={26} />
         </div>
-
+        {user.type === "O" &&
+        <div className="navbar-routes-container">
+          <button 
+            onClick={() => { navigate('/dashboard'); }}
+            className='navbar-routes-btn'
+          >Estatisticas</button>
+          <button 
+            onClick={() => { navigate('/donations'); }}
+            className='navbar-routes-btn middle'
+          >Gerenciar Doações</button>
+          <button 
+            onClick={() => { navigate('/inventory'); }}
+            className='navbar-routes-btn'
+          >Gerenciar Inventário</button>
+        </div>}
         <div className="navbar-actions" ref={menuRef}>
           <button
             className="navbar-avatar-btn"
@@ -56,18 +70,6 @@ const Navbar = () => {
                 className="navbar-dropdown-item"
               >
                 <UserCircle size={18} /> Editar Perfil
-              </button>
-              <button
-                onClick={() => { setMenuOpen(false); navigate('/dashboard'); }}
-                className="navbar-dropdown-item"
-              >
-                <ChartLine size={18} /> Estatísticas
-              </button>
-              <button
-                onClick={() => { setMenuOpen(false); navigate('/donations'); }}
-                className="navbar-dropdown-item"
-              >
-                <HandCoins size={18} /> Gerenciar Doações
               </button>
               <button onClick={handleLogout} className="navbar-dropdown-item navbar-dropdown-item--danger">
                 <LogOut size={18} /> Sair

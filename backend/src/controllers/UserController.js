@@ -45,6 +45,7 @@ class UserController {
 
       return res.status(200).json({ user });
     } catch (error) {
+      console.error("Erro no login: ", error)
       return res.status(401).json({ error: error.message });
     }
   }

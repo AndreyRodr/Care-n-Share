@@ -9,13 +9,14 @@ import PixModal from '../components/PixModal.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
 import { toast } from '../utils/toast.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const Feed = () => {
   usePageTitle('Feed Solidário');
   const [ongs, setOngs] = useState([]);
   const [userSupports, setUserSupports] = useState([]);
   const [feedPosts, setFeedPosts] = useState([]); // Guarda os posts do feed do usuário
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user, isLoading: authLoading } = useAuth()
   // 'explore' (Descobrir ONGs) ou 'feed' (Meu Feed/Meu Mural, dependendo do tipo de conta)
   const [activeTab, setActiveTab] = useState(user?.type === 'O' ? 'feed' : 'explore');
   const [loading, setLoading] = useState(true);
@@ -96,8 +97,10 @@ const Feed = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if(!authLoading) {
+      fetchData();
+    }
+  }, [authLoading]);
 
   const requestToggleSupport = (e, ong, isSupporting) => {
     e.stopPropagation();
