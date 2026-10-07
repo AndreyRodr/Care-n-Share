@@ -10,7 +10,6 @@ export default function useOngInventory() {
     });
 
     const [inventory, setInventory] = useState([{}]);
-    const [movements, setMovements] = useState([]);
 
     useEffect(() => {
         loadInventory();

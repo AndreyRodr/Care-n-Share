@@ -33,7 +33,20 @@ const Navbar = () => {
         <div className="navbar-logo" onClick={() => navigate('/')}>
           <Logo variant="horizontal" size={26} />
         </div>
-
+        <div className="navbar-routes-container">
+          <button 
+            onClick={() => { navigate('/dashboard'); }}
+            className='navbar-routes-btn'
+          >Estatisticas</button>
+          <button 
+            onClick={() => { navigate('/donations'); }}
+            className='navbar-routes-btn middle'
+          >Gerenciar Doações</button>
+          <button 
+            onClick={() => { navigate('/inventory'); }}
+            className='navbar-routes-btn'
+          >Gerenciar Inventário</button>
+        </div>
         <div className="navbar-actions" ref={menuRef}>
           <button
             className="navbar-avatar-btn"
@@ -58,13 +71,6 @@ const Navbar = () => {
                 <UserCircle size={18} /> Editar Perfil
               </button>
               <button
-                onClick={() => { setMenuOpen(false); navigate('/dashboard'); }}
-                className="navbar-dropdown-item"
-              >
-                <ChartLine size={18} /> Estatísticas
-              </button>
-              <button
-                onClick={() => { setMenuOpen(false); navigate('/donations'); }}
                 className="navbar-dropdown-item"
               >
                 <HandCoins size={18} /> Gerenciar Doações

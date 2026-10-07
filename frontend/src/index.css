@@ -189,6 +189,55 @@ h1, h2, h3, h4,
   background-color: #fef2f2;
   color: #ef4444;
 }
+.navbar-routes-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.navbar-routes-btn {
+    position: relative;
+    border: none;
+    background: transparent;
+    padding: 8px 14px;
+    color: var(--cozy-text);
+    font-size: 15px;
+    font-weight: 550;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.navbar-routes-btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 0;
+    height: 2px;
+    border-radius: 999px;
+    background-color: var(--cozy-accent);
+    transform: translateX(-50%);
+    transition: width 0.25s ease;
+}
+
+.navbar-routes-btn:hover {
+    color: var(--cozy-accent);
+    background-color: rgba(168, 218, 220, 0.12);
+    border-radius: 8px;
+}
+
+.navbar-routes-btn:hover::after {
+    width: 60%;
+}
+
+.middle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
 /* =========================================
    Login.jsx / Register.jsx Styles
