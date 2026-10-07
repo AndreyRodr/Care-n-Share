@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -33,6 +33,7 @@ const Navbar = () => {
         <div className="navbar-logo" onClick={() => navigate('/')}>
           <Logo variant="horizontal" size={26} />
         </div>
+        {user.type === "O" &&
         <div className="navbar-routes-container">
           <button 
             onClick={() => { navigate('/dashboard'); }}
@@ -46,7 +47,7 @@ const Navbar = () => {
             onClick={() => { navigate('/inventory'); }}
             className='navbar-routes-btn'
           >Gerenciar Inventário</button>
-        </div>
+        </div>}
         <div className="navbar-actions" ref={menuRef}>
           <button
             className="navbar-avatar-btn"
@@ -69,11 +70,6 @@ const Navbar = () => {
                 className="navbar-dropdown-item"
               >
                 <UserCircle size={18} /> Editar Perfil
-              </button>
-              <button
-                className="navbar-dropdown-item"
-              >
-                <HandCoins size={18} /> Gerenciar Doações
               </button>
               <button onClick={handleLogout} className="navbar-dropdown-item navbar-dropdown-item--danger">
                 <LogOut size={18} /> Sair
