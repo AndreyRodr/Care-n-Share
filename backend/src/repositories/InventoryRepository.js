@@ -158,23 +158,23 @@ class InventoryRepository {
     });
   }
 
-  async findMovements(itemId, ongId, { type, startDate, endDate, page = 1, limit = 10 }) {
-    const item = await prisma.ongInventory.findFirst({
-      where: { id: itemId, ongId }
-    });
+  async findMovements(itemId = null, ongId = null, { type, startDate, endDate, page = 1, limit = 10 } = {}) {
+    const where = {};
 
-    if (!item) return null;
-
-    const where = { inventoryItemId: itemId };
+    if (itemId) where.inventoryItemId = itemId;
+    if (ongId) where.inventoryItem = { ongId };
     if (type) where.type = type;
+
     if (startDate || endDate) {
       where.createdAt = {};
       if (startDate) where.createdAt.gte = new Date(startDate);
       if (endDate) where.createdAt.lte = new Date(endDate);
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
+    const parsedPage = Math.max(1, Number(page) || 1);
+    const parsedLimit = Math.max(1, Number(limit) || 10);
+    const skip = (parsedPage - 1) * parsedLimit;
+    const take = parsedLimit;
 
     const [movements, total] = await Promise.all([
       prisma.inventoryMovement.findMany({
@@ -190,9 +190,9 @@ class InventoryRepository {
       movements: movements.map((m) => ({ ...m, quantity: Number(m.quantity) })),
       pagination: {
         total,
-        page: Number(page),
-        limit: Number(limit),
-        totalPages: Math.ceil(total / limit)
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPages: Math.ceil(total / parsedLimit) || 1
       }
     };
   }

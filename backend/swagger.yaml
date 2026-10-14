@@ -428,6 +428,43 @@ paths:
         '204':
           description: Item removido.
 
+  /api/ong/inventory/movements:
+    get:
+      summary: Listar todas as movimentações
+      tags:
+        - Movimentações de Estoque
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [ENTRADA, SAIDA]
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Histórico retornado com paginação.
+
   /api/ong/inventory/{id}/movements:
     get:
       summary: Listar histórico de movimentações do item

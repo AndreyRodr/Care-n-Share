@@ -29,6 +29,12 @@ router.post(
 );
 
 router.get(
+  '/movements',
+  validate(inventoryMovementQuerySchema, 'query'),
+  inventoryController.listAllMovements
+);
+
+router.get(
   '/:id',
   validate(idParamSchema, 'params'),
   inventoryController.getItem
@@ -50,14 +56,15 @@ router.delete(
 router.get(
   '/:id/movements',
   validate(idParamSchema, 'params'),
+  validate(inventoryMovementQuerySchema, 'params'),
   inventoryController.listMovements
 );
 
-router.get(
+router.post(
   '/:id/movements',
   validate(idParamSchema, 'params'),
-  validate(inventoryMovementQuerySchema, 'query'),
-  inventoryController.listMovements
+  validate(createInventoryMovementSchema),
+  inventoryController.createMovement
 );
 
 export default router;
