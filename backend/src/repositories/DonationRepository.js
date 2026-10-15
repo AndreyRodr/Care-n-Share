@@ -169,6 +169,20 @@ class DonationRepository {
       where: { id, ongId },
     });
   }
+
+  async getDonorsByOng(ongId) {
+    const doadores = await prisma.donationCheckin.findMany({
+      where: {
+        ongId,
+      },
+      distinct: ["donorId"],
+      select: {
+        donorId: true,
+      },
+    });
+
+    return doadores.length;
+  }
 }
 
 export default new DonationRepository();

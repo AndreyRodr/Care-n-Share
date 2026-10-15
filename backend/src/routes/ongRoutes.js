@@ -42,6 +42,12 @@ router.get(
   donationController.getById
 );
 
+router.get(
+  '/donors/:id',
+  validate(idParamSchema, 'params'),
+  donationController.getDonorsByOng
+);
+
 router.put(
   '/donations/:id',
   validate(idParamSchema, 'params'),

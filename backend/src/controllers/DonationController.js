@@ -109,6 +109,19 @@ class DonationController {
       return res.status(400).json({ error: 'Erro ao deletar doação.' });
     }
   }
+
+  async getDonorsByOng(req, res) {
+    try {
+      const { id } = req.params;
+
+      const result = await donationRepository.getDonorsByOng(id);
+      if (!result) return res.status(404).json({ error: 'Doadores ou ONG não encontrados.' });
+
+      return res.status(200).json({ amount: result });
+    } catch (error) {
+      return res.status(400).json({ error: 'Erro ao encontrar doadores.' });
+    }
+  }
 }
 
 export default new DonationController();
