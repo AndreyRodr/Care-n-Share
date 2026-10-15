@@ -31,7 +31,7 @@ class DonationController {
       const { search, status, contributionType } = req.validatedQuery;
 
       const donations = await donationRepository.findAll(ongId, { search, status, contributionType });
-      
+
       return res.status(200).json(donations);
     } catch (error) {
       console.error('Erro ao buscar doações:', error);
@@ -120,6 +120,22 @@ class DonationController {
       return res.status(200).json({ amount: result });
     } catch (error) {
       return res.status(400).json({ error: 'Erro ao encontrar doadores.' });
+    }
+  }
+
+  async getContributionsByType(req, res) {
+    try {
+      const { id } = req.params;
+      const contributions = await donationRepository.getContributionsByType(id);
+
+      return res.status(200).json(contributions);
+    } catch (error) {
+      console.error("Erro ao buscar contribuições por tipo:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Erro ao buscar contribuições por tipo.",
+      });
     }
   }
 }

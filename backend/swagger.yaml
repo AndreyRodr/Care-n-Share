@@ -186,6 +186,23 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/ong/contributions/by-type/{id}:
+    get:
+      summary: Obter contribuições agrupadas por tipo
+      tags:
+        - Dashboard
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Quantidade de doadores.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmountSchema'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
     put:
       summary: Atualizar informações de uma doação
       tags:

@@ -48,6 +48,12 @@ router.get(
   donationController.getDonorsByOng
 );
 
+router.get(
+  '/contributions/by-type/:id',
+  validate(idParamSchema, 'params'),
+  donationController.getContributionsByType
+);
+
 router.put(
   '/donations/:id',
   validate(idParamSchema, 'params'),

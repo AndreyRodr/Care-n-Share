@@ -183,6 +183,27 @@ class DonationRepository {
 
     return doadores.length;
   }
+
+  async getContributionsByType(ongId) {
+    const contributions = await prisma.donationCheckin.groupBy({
+      by: ["type"],
+      where: {
+        ongId,
+      },
+      _count: {
+        _all: true,
+      },
+      _sum: {
+        quantity: true,
+      },
+    });
+
+    return contributions.map((contribution) => ({
+      type: contribution.type,
+      totalContributions: contribution._count._all,
+      totalQuantity: contribution._sum.quantity?.toString() ?? "0",
+    }));
+  }
 }
 
 export default new DonationRepository();
