@@ -80,7 +80,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         setOngId(user.id);
-        console.log(contributionsByType);
         
     }, [differentDonors, contributionsByType])
 
