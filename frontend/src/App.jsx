@@ -8,6 +8,7 @@ import Toaster from './components/Toaster.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import DonationManage from './pages/DonationManage.jsx';
 import InventoryManage from './pages/InventoryManage.jsx';
+import OngProfile from './pages/OngProfile.jsx';
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 
 const SessionLoading = () => (
@@ -74,6 +75,14 @@ function AppContent() {
           element={
             <PrivateRoute>
               <InventoryManage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ongs/:id"
+          element={
+            <PrivateRoute>
+              <OngProfile />
             </PrivateRoute>
           }
         />

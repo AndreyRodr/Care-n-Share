@@ -2697,3 +2697,236 @@ h1, h2, h3, h4,
     font-size: 0.8rem;
     white-space: nowrap;
 }
+
+/* =========================================
+   User Profile Style
+========================================= */
+
+
+.ong-profile-main {
+  width: min(100% - 2rem, 1100px);
+  margin: 0 auto;
+  padding: 1.5rem 0 4rem;
+  color: var(--cozy-text);
+}
+
+.ong-profile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(var(--rgb-accent), 0.15);
+  border-radius: 0.8rem;
+  background: var(--cozy-card);
+  color: var(--cozy-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ong-profile-header {
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(var(--rgb-accent), 0.12);
+  border-radius: 1.5rem;
+  background: var(--cozy-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.ong-profile-cover {
+  height: 150px;
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(255, 255, 255, 0.18),
+      transparent 30%
+    ),
+    linear-gradient(120deg, #0e7c66, #77b9a5);
+}
+
+.ong-profile-information {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 0 2rem 2rem;
+}
+
+.ong-profile-avatar {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  margin-top: -55px;
+  border: 5px solid var(--cozy-card);
+  border-radius: 1.5rem;
+  background: var(--cozy-bg);
+  object-fit: cover;
+}
+
+.ong-profile-identity {
+  min-width: 0;
+  flex: 1;
+  padding-top: 1rem;
+}
+
+.ong-profile-label {
+  color: var(--cozy-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ong-profile-identity h1 {
+  margin: 0.35rem 0 0.75rem;
+  font-size: clamp(1.6rem, 4vw, 2.25rem);
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.ong-profile-description {
+  max-width: 750px;
+  margin: 0;
+  color: rgba(var(--rgb-text), 0.8);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ong-profile-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.ong-profile-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--cozy-accent);
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.ong-profile-posts {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.ong-profile-section-header {
+  margin-bottom: 1.5rem;
+}
+
+.ong-profile-section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.ong-profile-section-header h2 svg {
+  color: var(--cozy-accent);
+}
+
+.ong-profile-section-header p {
+  margin: 0;
+  color: rgba(var(--rgb-text), 0.6);
+  line-height: 1.6;
+}
+
+.ong-profile-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ong-profile-empty,
+.ong-profile-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  border: 1px solid rgba(var(--rgb-accent), 0.12);
+  border-radius: 1.5rem;
+  background: var(--cozy-card);
+  text-align: center;
+}
+
+.ong-profile-empty > svg {
+  color: var(--cozy-accent);
+}
+
+.ong-profile-empty h3,
+.ong-profile-feedback h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.ong-profile-empty p,
+.ong-profile-feedback p {
+  max-width: 480px;
+  margin: 0;
+  color: rgba(var(--rgb-text), 0.65);
+  line-height: 1.6;
+}
+
+.ong-profile-primary-button {
+  margin-top: 0.5rem;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 0.8rem;
+  background: var(--cozy-accent);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ong-profile-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 4px solid rgba(var(--rgb-accent), 0.15);
+  border-top-color: var(--cozy-accent);
+  border-radius: 50%;
+  animation: ong-profile-spin 0.8s linear infinite;
+}
+
+@keyframes ong-profile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .ong-profile-main {
+    width: min(100% - 1.25rem, 1100px);
+    padding-top: 1rem;
+  }
+
+  .ong-profile-cover {
+    height: 110px;
+  }
+
+  .ong-profile-information {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1.25rem 1.5rem;
+  }
+
+  .ong-profile-avatar {
+    width: 100px;
+    height: 100px;
+    margin-top: -45px;
+  }
+
+  .ong-profile-identity {
+    padding-top: 0.5rem;
+  }
+
+  .ong-profile-stats {
+    gap: 0.9rem;
+  }
+}

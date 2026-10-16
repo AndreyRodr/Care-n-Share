@@ -10,6 +10,7 @@ import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
 import { toast } from '../utils/toast.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const Feed = () => {
   usePageTitle('Feed Solidário');
@@ -24,6 +25,8 @@ const Feed = () => {
   const [showPixModal, setShowPixModal] = useState(null);
   const [confirmStopOng, setConfirmStopOng] = useState(null);
   const [supportingId, setSupportingId] = useState(null);
+
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -53,7 +56,7 @@ const Feed = () => {
       // 2. Execução exclusiva para usuário Doador (Tipo 'U')
       const ongsResponse = await api.get('/api/users/ongs');
       let ongsData = ongsResponse.data;
-      
+
       const profileResponse = await api.get(`/api/users/users/${user.id}`);
       const supportedIds = profileResponse.data.supportedOngs?.map(o => o.id) || [];
       setUserSupports(supportedIds);
@@ -61,13 +64,13 @@ const Feed = () => {
       if (supportedIds.length > 0) {
         const postPromises = supportedIds.map(id => api.get(`/api/posts/ong/${id}`));
         const postResponses = await Promise.all(postPromises);
-        
+
         let posts = postResponses.flatMap((res, index) => {
           const ongId = supportedIds[index];
           const ongInfo = ongsData.find(o => o.id === ongId);
           return res.data.map(post => ({ ...post, ong: ongInfo }));
         });
-        
+
         posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setFeedPosts(posts);
       } else {
@@ -86,7 +89,7 @@ const Feed = () => {
         });
         ongsData.sort((a, b) => b.matchScore - a.matchScore);
       }
-      
+
       setOngs(ongsData);
       setLoading(false);
 
@@ -97,7 +100,7 @@ const Feed = () => {
   };
 
   useEffect(() => {
-    if(!authLoading) {
+    if (!authLoading) {
       fetchData();
     }
   }, [authLoading]);
@@ -136,7 +139,7 @@ const Feed = () => {
   return (
     <div className="app-wrapper">
       <Navbar />
-      
+
       <main className="feed-main">
         <header className="feed-header">
           <div>
@@ -147,8 +150,8 @@ const Feed = () => {
           </div>
           {user?.type === 'U' && (
             <div className="impact-card">
-              <span style={{fontSize: '10px', fontWeight: 900, color: 'rgba(var(--rgb-text),0.3)', textTransform: 'uppercase', display: 'block', marginBottom: '4px'}}>Impacto Atual</span>
-              <span style={{fontSize: '1.5rem', fontWeight: 900, color: 'var(--cozy-accent)'}}>{userSupports.length} causas apoiadas</span>
+              <span style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(var(--rgb-text),0.3)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Impacto Atual</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--cozy-accent)' }}>{userSupports.length} causas apoiadas</span>
             </div>
           )}
         </header>
@@ -159,7 +162,7 @@ const Feed = () => {
 
         {/* NAVEGAÇÃO DE ABAS (rótulos diferentes para Doador e ONG) */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2.5rem', borderBottom: '2px solid rgba(var(--rgb-accent), 0.1)', paddingBottom: '1rem' }}>
-          <button 
+          <button
             onClick={() => setActiveTab('explore')}
             style={{
               padding: '0.75rem 1.5rem', borderRadius: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', cursor: 'pointer', transition: 'all 0.3s',
@@ -169,7 +172,7 @@ const Feed = () => {
           >
             <Compass size={18} /> Descobrir ONGs
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('feed')}
             style={{
               padding: '0.75rem 1.5rem', borderRadius: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', border: 'none', cursor: 'pointer', transition: 'all 0.3s',
@@ -182,7 +185,7 @@ const Feed = () => {
         </div>
 
         {loading ? (
-          <div style={{display: 'flex', justifyContent: 'center', padding: '4rem'}}>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
             <div style={{ width: '3rem', height: '3rem', borderTop: '4px solid var(--cozy-accent)', borderRight: '4px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
           </div>
         ) : (
@@ -194,7 +197,19 @@ const Feed = () => {
                   const isSupporting = userSupports.includes(ong.id);
                   const isProcessing = supportingId === ong.id;
                   return (
-                    <div key={ong.id} onClick={() => setSelectedOng(ong)} className="ong-card">
+                    <div
+                      key={ong.id}
+                      className="ong-card"
+                      role="link"
+                      tabIndex={0}
+                      onClick={() => navigate(`/ongs/${ong.id}`)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          navigate(`/ongs/${ong.id}`);
+                        }
+                      }}
+                    >
                       <div className="ong-card-image">
                         {ong.profilePicture ? (
                           <img src={ong.profilePicture} alt={ong.name} />
@@ -214,8 +229,8 @@ const Feed = () => {
 
                         <div className="ong-card-footer">
                           {user?.type === 'U' ? (
-                            <button 
-                              onClick={(e) => requestToggleSupport(e, ong, isSupporting)} 
+                            <button
+                              onClick={(e) => requestToggleSupport(e, ong, isSupporting)}
                               className={`btn-support ${isSupporting ? 'active' : 'inactive'}`}
                               disabled={isProcessing}
                             >
@@ -223,13 +238,13 @@ const Feed = () => {
                               {isProcessing ? 'Processando...' : (isSupporting ? 'Parar Apoio' : 'Apoiar')}
                             </button>
                           ) : (
-                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', fontWeight: 'bold', color: 'var(--cozy-accent)', textTransform: 'uppercase'}}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', fontWeight: 'bold', color: 'var(--cozy-accent)', textTransform: 'uppercase' }}>
                               <PlusCircle size={16} /> Ver Mural
                             </div>
                           )}
-                          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <span style={{fontSize: '1.125rem', fontWeight: 900}}>{ong.supporters?.length || 0}</span>
-                            <span style={{fontSize: '9px', fontWeight: 900, color: 'rgba(var(--rgb-text),0.3)', textTransform: 'uppercase', marginTop: '4px'}}>Apoiadores</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                            <span style={{ fontSize: '1.125rem', fontWeight: 900 }}>{ong.supporters?.length || 0}</span>
+                            <span style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(var(--rgb-text),0.3)', textTransform: 'uppercase', marginTop: '4px' }}>Apoiadores</span>
                           </div>
                         </div>
                       </div>
@@ -258,20 +273,20 @@ const Feed = () => {
       </main>
 
       {/* Modal de Detalhes da ONG */}
-      {selectedOng && (
-        <OngModal 
-          ong={selectedOng} 
-          onClose={() => setSelectedOng(null)} 
+      {/* {selectedOng && (
+        <OngModal
+          ong={selectedOng}
+          onClose={() => setSelectedOng(null)}
         />
-      )}
+      )} */}
 
       {/* Modal de PIX (Doação) */}
-      {showPixModal && (
-        <PixModal 
-          ong={showPixModal} 
-          onClose={() => setShowPixModal(null)} 
+      {/* {showPixModal && (
+        <PixModal
+          ong={showPixModal}
+          onClose={() => setShowPixModal(null)}
         />
-      )}
+      )} */}
 
       {/* Confirmação antes de parar de apoiar */}
       {confirmStopOng && (
