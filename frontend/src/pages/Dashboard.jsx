@@ -20,34 +20,8 @@ import {
     Bar,
 } from "recharts";
 import useOngDashboard from "../hooks/useOngDashboard";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { useAuth } from "../contexts/AuthContext";
-
-const mockDonationTypeData = [
-    {
-        type: "Alimentos",
-        quantity: 45,
-    },
-    {
-        type: "Roupas",
-        quantity: 25,
-    },
-    {
-        type: "Higiene",
-        quantity: 18,
-    },
-    {
-        type: "Voluntariado",
-        quantity: 12,
-    },
-];
-
-const COLORS = [
-    "#1D3557",
-    "#457B9D",
-    "#A8DADC",
-    "#E63946",
-];
 
 const mockCompletedGoalsData = [
     { period: "Jan", quantity: 3 },
@@ -82,12 +56,33 @@ const Dashboard = () => {
         volunteersData,
         activityData,
         differentDonors,
+        contributionsByType,
         setOngId
     } = useOngDashboard();
 
+    const generateRandomColor = () => {
+        return `#${Math.floor(Math.random() * 16777215)
+            .toString(16)
+            .padStart(6, '0')}`;
+    };
+
+    const donationColors = useMemo(() => {
+        const colors = {};
+
+        contributionsByType.forEach((item) => {
+            if (!colors[item.type]) {
+                colors[item.type] = generateRandomColor();
+            }
+        });
+
+        return colors;
+    }, [contributionsByType]);
+
     useEffect(() => {
         setOngId(user.id);
-    }, [differentDonors])
+        console.log(contributionsByType);
+        
+    }, [differentDonors, contributionsByType])
 
     return (
         <div>
@@ -122,18 +117,18 @@ const Dashboard = () => {
                     <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie
-                                data={mockDonationTypeData}
-                                dataKey="quantity"
+                                data={contributionsByType}
+                                dataKey="totalContributions"
                                 nameKey="type"
                                 cx="50%"
                                 cy="50%"
                                 outerRadius={100}
                                 label
                             >
-                                {mockDonationTypeData.map((_, index) => (
+                                {contributionsByType.map((item) => (
                                     <Cell
-                                        key={`cell-${index}`}
-                                        fill={COLORS[index % COLORS.length]}
+                                        key={`cell-${item.type}`}
+                                        fill={donationColors[item.type]}
                                     />
                                 ))}
                             </Pie>

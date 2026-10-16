@@ -4,13 +4,14 @@ import api from "../services/api";
 
 export default function useOngDashboard() {
 
+    const [ongId, setOngId] = useState()
     const [summary, setSummary] = useState({})
     const [donationsData, setDonationsData] = useState({})
     const [goalsData, setGoalsData] = useState({})
     const [volunteersData, setVolunteersData] = useState({})
     const [activityData, setActivityData] = useState({})
-    const [ongId, setOngId] = useState()
     const [differentDonors, setDifferentDonors] = useState({})
+    const [contributionsByType, setContributionsByType] = useState([])
 
     useEffect(() => {
         getDashboardActivity();
@@ -22,6 +23,7 @@ export default function useOngDashboard() {
 
     useEffect(() => {
         getDifferenteDonors();
+        getContributionsByType();
     }, [ongId])
 
     async function getDashboardSummary() {
@@ -60,6 +62,17 @@ export default function useOngDashboard() {
         }
     }
 
+    async function getContributionsByType() {
+        try {
+            if(ongId) {
+                const response = await api.get(`/api/ong/contributions/by-type/${ongId}`);
+                setContributionsByType(response.data)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     return{
         summary,
         donationsData,
@@ -67,6 +80,7 @@ export default function useOngDashboard() {
         volunteersData,
         activityData,
         differentDonors,
+        contributionsByType,
         setOngId,
     };
 }
