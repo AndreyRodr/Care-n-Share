@@ -19,15 +19,9 @@ import {
     BarChart,
     Bar,
 } from "recharts";
-
-const mockOverviewData = [
-    { period: "Jan", quantity: 42 },
-    { period: "Fev", quantity: 58 },
-    { period: "Mar", quantity: 37 },
-    { period: "Abr", quantity: 71 },
-    { period: "Mai", quantity: 63 },
-    { period: "Jun", quantity: 84 },
-]
+import useOngDashboard from "../hooks/useOngDashboard";
+import { useContext, useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 const mockDonationTypeData = [
     {
@@ -79,28 +73,44 @@ const DashboardCard = ({ icon, number, text }) => {
 }
 
 const Dashboard = () => {
+    const { user } = useAuth()
+
+    const {
+        summary,
+        donationsData,
+        goalsData,
+        volunteersData,
+        activityData,
+        differentDonors,
+        setOngId
+    } = useOngDashboard();
+
+    useEffect(() => {
+        setOngId(user.id);
+    }, [differentDonors])
+
     return (
         <div>
             <Navbar />
             <div className="dashboard-main">
                 <div className="summary-cards-container">
-                    <SummaryCard icon={<FaBoxArchive />} number='327' text='Itens' />
-                    <SummaryCard icon={<IoPeople />} number='84' text='Doadores' />
-                    <SummaryCard icon={<FaClock />} number='126' text='Horas' />
+                    <SummaryCard icon={<FaBoxArchive />} number={summary.totalDonations} text='Itens' />
+                    <SummaryCard icon={<IoPeople />} number={differentDonors.amount} text='Doadores' />
+                    <SummaryCard icon={<FaClock />} number={volunteersData.totalHours} text='Horas' />
                 </div>
             </div>
             <div className="dashboard-overview-charts-container">
                 <div className="dashboard-chart">
                     <h1>Doação ao longo dos meses</h1>
                     <ResponsiveContainer width="90%" height={300}>
-                        <LineChart data={mockOverviewData}>
+                        <LineChart data={donationsData.byMonth}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="period" />
+                            <XAxis dataKey="month" />
                             <YAxis />
                             <Tooltip />
                             <Line
                                 type="monotone"
-                                dataKey="quantity"
+                                dataKey="count"
                                 stroke="var(--cozy-accent)"
                                 strokeWidth={2}
                             />
