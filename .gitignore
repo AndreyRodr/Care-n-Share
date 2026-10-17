@@ -32,3 +32,12 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Skills de IA auto-instaladas pelo Prisma CLI (prisma generate/install)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+
+# Documentos internos (requisitos, planilhas) - não versionar
+Requisitos Care-n-share*.csv
