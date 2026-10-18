@@ -7,6 +7,7 @@ import api from '../services/api.js';
 import Navbar from '../components/Navbar.jsx';
 import PostCard from '../components/PostCard.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const OngProfile = () => {
     const { id } = useParams();
@@ -16,6 +17,55 @@ const OngProfile = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const { user, refreshSession } = useAuth();
+
+    const [isSupporting, setIsSupporting] = useState(false);
+    const [supportLoading, setSupportLoading] = useState(false);
+    const [supportersCount, setSupportersCount] = useState(0);
+    const [supportError, setSupportError] = useState('');
+
+    useEffect(() => {
+        if (!ong || !user) return;
+
+        const supported = (user.supportedOngs || []).some(
+            (supportedOng) =>
+                (typeof supportedOng === 'string'
+                    ? supportedOng
+                    : supportedOng.id) === ong.id
+        );
+
+        setIsSupporting(supported);
+    }, [user, ong]);
+
+    const handleToggleSupport = async () => {
+        if (!user || supportLoading || user.id === ong.id) return;
+
+        setSupportLoading(true);
+        setSupportError('');
+
+        try {
+            if (isSupporting) {
+                await api.delete(`/api/users/ongs/${ong.id}/support`);
+                setIsSupporting(false);
+                setSupportersCount((count) => Math.max(0, count - 1));
+            } else {
+                await api.post(`api/users/ongs/${ong.id}/support`);
+                setIsSupporting(true);
+                setSupportersCount((count) => count + 1);
+            }
+            await refreshSession();
+        } catch (error) {
+            console.error('Erro ao atualizar apoio à ONG: ', error);
+
+            setSupportError(
+                error.response?.data?.error ||
+                'Não foi possível atualizar seu apoio. Tente Novamente.'
+            );
+        } finally {
+            setSupportLoading(false);
+        }
+    }
 
     usePageTitle(ong ? `${ong.name} | Care n' Share` : 'Perfil da ONG');
 
@@ -41,6 +91,9 @@ const OngProfile = () => {
                 if (cancelled) return;
 
                 setOng(ongResponse.data);
+                setSupportersCount(
+                    ongResponse.data.supporters?.length ?? 0
+                )
 
                 const sortedPosts = [...postsResponse.data].sort(
                     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -160,10 +213,8 @@ const OngProfile = () => {
                             <div className="ong-profile-stats">
                                 <span>
                                     <Users size={17} />
-                                    {ong.supporters?.length ?? 0}{' '}
-                                    {(ong.supporters?.length ?? 0) === 1
-                                        ? 'apoiador'
-                                        : 'apoiadores'}
+                                    {supportersCount}
+                                    {supportersCount === 1 ? 'apoiador' : 'apoiadores'}
                                 </span>
 
                                 <span>
@@ -174,7 +225,36 @@ const OngProfile = () => {
                                         : 'publicações'}
                                 </span>
                             </div>
+
                         </div>
+                        {user?.id !== ong.id && (
+                            <div className="ong-profile-support">
+                                <button
+                                    type="button"
+                                    className={`ong-profile-support-button ${isSupporting ? 'is-supporting' : ''
+                                        }`}
+                                    onClick={handleToggleSupport}
+                                    disabled={supportLoading}
+                                >
+                                    <Heart
+                                        size={18}
+                                        fill={isSupporting ? 'currentColor' : 'none'}
+                                    />
+
+                                    {supportLoading
+                                        ? 'Atualizando...'
+                                        : isSupporting
+                                            ? 'Apoiando'
+                                            : 'Apoiar ONG'}
+                                </button>
+
+                                {supportError && (
+                                    <p className="ong-profile-support-error" role="alert">
+                                        {supportError}
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </section>
 
