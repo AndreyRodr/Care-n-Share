@@ -56,9 +56,9 @@ const InventoryManager = () => {
                     <h1>Gestão de Inventário</h1>
                     <p>Controle os itens disponíveis no estoque</p>
                 </div>
-                <div className="register-item-btn-container">
+                {/* <div className="register-item-btn-container">
                     <button className="register-item-btn button-primary">Registrar movimentação</button>
-                </div>
+                </div> */}
                 <div className="summary-cards-container">
                     <SummaryCard number={inventory.length} text="Itens cadastrados"/>
                     <SummaryCard number={stockCountHandle()} text="Estoque baixo"/>

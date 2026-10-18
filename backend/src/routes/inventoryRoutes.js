@@ -56,7 +56,7 @@ router.delete(
 router.get(
   '/:id/movements',
   validate(idParamSchema, 'params'),
-  validate(inventoryMovementQuerySchema, 'params'),
+  validate(inventoryMovementQuerySchema, 'query'),
   inventoryController.listMovements
 );
 

@@ -11,6 +11,8 @@ export default function useOngMovement() {
 
     async function loadMovementsById() {
         try {
+            console.log(item);
+            
             const data = await getOngMovementsById(item.id);
             setMovements(data)
             
