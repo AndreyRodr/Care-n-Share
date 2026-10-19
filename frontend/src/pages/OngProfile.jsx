@@ -1,7 +1,13 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Heart, LayoutList, Users } from 'lucide-react';
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Heart,
+  LayoutList,
+  Users
+} from 'lucide-react';
 
 import api from '../services/api.js';
 import Navbar from '../components/Navbar.jsx';
@@ -203,8 +209,20 @@ const OngProfile = () => {
                                 Organização sem fins lucrativos
                             </span>
 
-                            <h1>{ong.name}</h1>
+                            <div className="ong-profile-name-row">
+                                <h1>{ong.name}</h1>
 
+                                {ong.verificationStatus === 'APPROVED' && (
+                                    <span
+                                    className="ong-verification-badge"
+                                    title="ONG verificada"
+                                    aria-label="ONG verificada"
+                                    >
+                                    <BadgeCheck size={22} />
+                                    ONG verificada
+                                    </span>
+                                )}
+                            </div>
                             <p className="ong-profile-description">
                                 {ong.description ||
                                     'Esta ONG ainda não adicionou uma descrição.'}

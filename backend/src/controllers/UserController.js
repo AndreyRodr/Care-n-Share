@@ -1,11 +1,14 @@
 import userService from '../services/UserService.js';
 import userRepository from '../repositories/UserRepository.js';
-import { uploadImage } from '../config/cloudinary.js';
 import {
+  uploadImage,
+  uploadPrivateDocument
+} from '../config/cloudinary.js';import {
   AUTH_COOKIE_BASE_OPTIONS,
   AUTH_COOKIE_NAME,
   AUTH_COOKIE_OPTIONS
 } from '../config/auth.js';
+import cnpjValidationService from '../services/CnpjValidationService.js';
 
 class UserController {
   /**
@@ -13,24 +16,73 @@ class UserController {
    */
   async register(req, res) {
     try {
-      let imageUrl = null;
+      const files = req.files ?? {};
+      const profilePictureFile = files.profilePicture?.[0];
 
-      // Se uma imagem foi enviada, faz o upload para o Cloudinary
-      if (req.file) {
-        const uploadResult = await uploadImage(req.file.buffer, 'jacaridade_users');
-        imageUrl = uploadResult.secure_url;
+      let imageUrl = null;
+      let verification = undefined;
+
+      if (req.body.type === 'O') {
+        const cnpjValidation = await cnpjValidationService.validate(
+          req.body.cnpj
+        );
+
+        if (!cnpjValidation.valid) {
+          return res.status(400).json({
+            error: cnpjValidation.reason
+          });
+        }
+
+        const statuteFile = files.statuteDocument?.[0];
+        const addressProofFile = files.addressProofDocument?.[0];
+
+        const [statuteUpload, addressProofUpload] = await Promise.all([
+          uploadPrivateDocument(
+            statuteFile.buffer,
+            'care_n_share/ong_documents/statutes'
+          ),
+          uploadPrivateDocument(
+            addressProofFile.buffer,
+            'care_n_share/ong_documents/address_proofs'
+          )
+        ]);
+
+        verification = {
+          cnpj: cnpjValidation.cnpj,
+          legalName: cnpjValidation.legalName,
+          cnpjSituation: cnpjValidation.situation,
+          cnpjCheckedAt: cnpjValidation.checkedAt,
+          validationProvider: cnpjValidation.provider,
+
+          statuteDocumentUrl: statuteUpload.secure_url,
+          statuteDocumentPublicId: statuteUpload.public_id,
+
+          addressProofDocumentUrl: addressProofUpload.secure_url,
+          addressProofDocumentPublicId: addressProofUpload.public_id
+        };
       }
 
-      const userData = {
+      if (profilePictureFile) {
+        const imageUpload = await uploadImage(
+          profilePictureFile.buffer,
+          'jacaridade_users'
+        );
+
+        imageUrl = imageUpload.secure_url;
+      }
+
+      const userData = {   
         ...req.body,
-        profilePicture: imageUrl
+        profilePicture: imageUrl,
+        verification
       };
 
       const user = await userService.register(userData);
       return res.status(201).json(user);
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
-    }
+      } catch (error) {
+        console.error('Erro no cadastro:', error);
+        return res.status(400).json({ error: error.message });
+      }
   }
 
   /**

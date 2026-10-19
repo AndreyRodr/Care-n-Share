@@ -6,18 +6,27 @@ class UserRepository {
    * Cria um novo usuário ou ONG no banco
    */
   async create(userData) {
-    return await prisma.user.create({
-      data: {
-        name: userData.name,
-        email: userData.email,
-        profilePicture: userData.profilePicture,
-        description: userData.description,
-        passwordHash: userData.passwordHash,
-        type: userData.type,
-        pixKey: userData.pixKey
-      }
-    });
-  }
+  return await prisma.user.create({
+    data: {
+      name: userData.name,
+      email: userData.email,
+      profilePicture: userData.profilePicture,
+      description: userData.description,
+      passwordHash: userData.passwordHash,
+      type: userData.type,
+      pixKey: userData.pixKey,
+
+      verificationStatus:
+        userData.type === 'O' ? 'PENDING' : null,
+
+      ongVerification: userData.verification
+        ? {
+            create: userData.verification
+          }
+        : undefined
+    }
+  });
+}
 
   /**
    * Atualiza os dados de um usuário

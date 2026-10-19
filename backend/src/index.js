@@ -10,6 +10,7 @@ import ongRoutes from './routes/ongRoutes.js';
 import inventoryRoutes from './routes/inventoryRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import causeRoutes from './routes/causeRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -33,6 +34,7 @@ app.use('/api/ong', ongRoutes);
 app.use('/api/ong/inventory', inventoryRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/causes', causeRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.send('Care n Share API is running');

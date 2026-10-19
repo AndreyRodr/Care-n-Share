@@ -10,6 +10,7 @@ import DonationManage from './pages/DonationManage.jsx';
 import InventoryManage from './pages/InventoryManage.jsx';
 import OngProfile from './pages/OngProfile.jsx';
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
+import AdminOngVerifications from './pages/AdminOngVerifications.jsx';
 
 const SessionLoading = () => (
   <div className="app-wrapper">
@@ -25,6 +26,22 @@ const PrivateRoute = ({ children }) => {
   }
 
   return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  if (isLoading) {
+    return <SessionLoading />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return user?.role === 'ADMIN'
+    ? children
+    : <Navigate to="/" replace />;
 };
 
 const HomeRoute = () => {
@@ -87,6 +104,14 @@ function AppContent() {
           }
         />
 
+        <Route
+          path="/admin/ong-verifications"
+          element={
+            <AdminRoute>
+              <AdminOngVerifications />
+            </AdminRoute>
+          }
+        />
         <Route path="/" element={<HomeRoute />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

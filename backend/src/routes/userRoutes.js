@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import userController from '../controllers/UserController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { upload } from '../config/cloudinary.js';
+import { upload, ongRegistrationUpload } from '../config/cloudinary.js';
 import validate from '../middlewares/validateMiddleware.js';
 import {
   loginSchema,
@@ -9,13 +9,20 @@ import {
   updateProfileSchema
 } from '../schemas/userSchemas.js';
 import { idParamSchema } from '../schemas/commonSchemas.js';
+import requireOngDocuments from '../middlewares/requireOngDocumentsMiddleware.js';
+
 const router = Router();
 
 // Rotas Públicas
 router.post(
   '/register',
-  upload.single('profilePicture'),
+  ongRegistrationUpload.fields([
+    { name: 'profilePicture', maxCount: 1 },
+    { name: 'statuteDocument', maxCount: 1 },
+    { name: 'addressProofDocument', maxCount: 1 }
+  ]),
   validate(registerSchema),
+  requireOngDocuments,
   userController.register
 );
 

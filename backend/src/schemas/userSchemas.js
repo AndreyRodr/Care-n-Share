@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidCnpj, onlyDigits } from '../services/CnpjValidationService.js';
 
 const optionalText = z
   .string()
@@ -7,6 +8,17 @@ const optionalText = z
   .optional()
   .or(z.literal(''))
   .transform((value) => value || undefined);
+
+const optionalCnpj = z
+  .string()
+  .trim()
+  .optional()
+  .or(z.literal(''))
+  .transform((value) => (value ? onlyDigits(value) : undefined))
+  .refine(
+    (value) => value === undefined || isValidCnpj(value),
+    'Informe um CNPJ válido.'
+  );
 
 export const registerSchema = z
   .object({
@@ -37,6 +49,8 @@ export const registerSchema = z
       error: 'O tipo de conta deve ser U (usuário) ou O (ONG).'
     }),
 
+    cnpj: optionalCnpj,
+
     pixKey: z
       .string()
       .trim()
@@ -44,8 +58,17 @@ export const registerSchema = z
       .optional()
       .or(z.literal(''))
       .transform((value) => value || undefined)
-  })
-  .strict();
+    })
+  .strict()
+  .superRefine((data, context) => {
+    if (data.type === 'O' && !data.cnpj) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cnpj'],
+        message: 'O CNPJ é obrigatório para o cadastro de uma ONG.'
+      });
+    }
+  });
 
 export const loginSchema = z
   .object({
