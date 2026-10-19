@@ -8,12 +8,18 @@ import {
   createProjectSchema,
   updateProjectSchema
 } from '../schemas/projectSchemas.js';
+import requireApprovedOng from '../middlewares/requireApprovedOngMiddleware.js';
 
 const router = Router();
 
 router.use(authMiddleware, authorizeRoles('O'));
 
-router.post('/', validate(createProjectSchema), projectController.create);
+router.post(
+  '/',
+  requireApprovedOng,
+  validate(createProjectSchema),
+  projectController.create
+);
 
 router.get('/', projectController.getByOng);
 
