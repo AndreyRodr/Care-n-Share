@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, LogOut, UserCircle, ChevronDown, ChartLine, HandCoins} from 'lucide-react';
+import { Heart, LogOut, UserCircle, ChevronDown, ChartLine, HandCoins, ShieldCheck} from 'lucide-react';
 import api from '../services/api.js';
 import Logo from './Logo.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -65,6 +65,21 @@ const Navbar = () => {
 
           {menuOpen && (
             <div className="navbar-dropdown">
+
+              {user?.role === 'ADMIN' && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate('/admin/ong-verifications');
+                  }}
+                  className="navbar-dropdown-item"
+                >
+                  <ShieldCheck size={18} />
+                  Verificar ONGs
+                </button>
+              )}
+
+
               <button
                 onClick={() => { setMenuOpen(false); navigate('/profile/edit'); }}
                 className="navbar-dropdown-item"

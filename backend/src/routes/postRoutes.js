@@ -6,7 +6,7 @@ import authorizeRoles from '../middlewares/authorizeRolesMiddleware.js';
 import validate from '../middlewares/validateMiddleware.js';
 import { ongIdParamSchema } from '../schemas/commonSchemas.js';
 import { createPostSchema } from '../schemas/postSchemas.js';
-
+import requireApprovedOng from '../middlewares/requireApprovedOngMiddleware.js';
 
 const router = Router();
 
@@ -22,6 +22,7 @@ router.post(
   '/',
   authMiddleware,
   authorizeRoles('O'),
+  requireApprovedOng,
   upload.single('image'),
   validate(createPostSchema),
   postController.create

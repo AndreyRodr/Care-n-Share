@@ -7,7 +7,16 @@ import usePageTitle from '../hooks/usePageTitle.js';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '', email: '', password: '', description: '', type: 'U', profilePicture: '', pixKey: ''
+    name: '',
+    email: '',
+    password: '',
+    description: '',
+    type: 'U',
+    profilePicture: '',
+    pixKey: '',
+    cnpj: '',
+    statuteDocument: null,
+    addressProofDocument: null
   });
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
@@ -58,6 +67,15 @@ const Register = () => {
       submitData.append('password', formData.password);
       submitData.append('description', formData.description);
       submitData.append('type', formData.type);
+ 
+      if (formData.type === 'O') {
+        submitData.append('cnpj', formData.cnpj);
+        submitData.append('statuteDocument', formData.statuteDocument);
+        submitData.append(
+          'addressProofDocument',
+          formData.addressProofDocument
+        );
+      }
       
       if (formData.pixKey) submitData.append('pixKey', formData.pixKey);
 
@@ -179,13 +197,72 @@ const Register = () => {
           </div>
 
           {formData.type === 'O' && (
+            <>
             <div className="form-group">
-              <label>Chave PIX da ONG</label>
-              <input type="text" className="form-input input-pix" style={{paddingLeft: '1rem'}}
-                placeholder="E-mail, CPF, CNPJ ou Chave Aleatória"
-                value={formData.pixKey} onChange={(e) => setFormData({ ...formData, pixKey: e.target.value })}
+              <label>CNPJ da ONG</label>
+              <input
+                type="text"
+                required
+                className="form-input"
+                style={{ paddingLeft: '1rem' }}
+                placeholder="00.000.000/0000-00"
+                value={formData.cnpj}
+                onChange={(e) =>
+                  setFormData({ ...formData, cnpj: e.target.value })
+                }
               />
             </div>
+
+            <div className="register-grid">
+              <div className="form-group">
+                <label>Estatuto social ou ato constitutivo (PDF)</label>
+                <input
+                  type="file"
+                  required
+                  accept="application/pdf"
+                  className="form-input"
+                  style={{ paddingLeft: '1rem' }}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      statuteDocument: e.target.files?.[0] ?? null
+                    })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Comprovante de endereço institucional (PDF)</label>
+                <input
+                  type="file"
+                  required
+                  accept="application/pdf"
+                  className="form-input"
+                  style={{ paddingLeft: '1rem' }}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      addressProofDocument: e.target.files?.[0] ?? null
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Chave PIX da ONG</label>
+              <input
+                type="text"
+                className="form-input input-pix"
+                style={{ paddingLeft: '1rem' }}
+                placeholder="E-mail, CPF, CNPJ ou chave aleatória"
+                value={formData.pixKey}
+                onChange={(e) =>
+                  setFormData({ ...formData, pixKey: e.target.value })
+                }
+              />
+            </div>
+          </>
           )}
 
           <button type="submit" disabled={loading} className="btn-submit">

@@ -11,6 +11,7 @@ import {
   cancelDonationSchema,
   donationListQuerySchema
 } from '../schemas/donationSchemas.js';
+import requireApprovedOng from '../middlewares/requireApprovedOngMiddleware.js';
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.get('/dashboard/activity', ongDashboardController.getActivity);
 // --- Doações ---
 router.post(
   '/donations',
+  requireApprovedOng,
   validate(createDonationSchema),
   donationController.create
 );
@@ -63,6 +65,7 @@ router.put(
 
 router.patch(
   '/donations/:id/complete',
+  requireApprovedOng,
   validate(idParamSchema, 'params'),
   donationController.complete
 );
