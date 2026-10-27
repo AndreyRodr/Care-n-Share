@@ -111,8 +111,9 @@ h1, h2, h3, h4,
   gap: 1rem;
 }
 .navbar-avatar-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
   background: none;
   border: none;
@@ -121,6 +122,7 @@ h1, h2, h3, h4,
   border-radius: 999px;
   transition: background-color 0.2s;
 }
+
 .navbar-avatar-btn:hover {
   background-color: rgba(var(--rgb-accent), 0.08);
 }
@@ -132,12 +134,17 @@ h1, h2, h3, h4,
   transform: rotate(180deg);
 }
 .navbar-avatar {
+  display: block;
+  flex-shrink: 0;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
   border: 2px solid rgba(var(--rgb-accent), 0.2);
   object-fit: cover;
+  object-position: center;
+  box-sizing: border-box;
 }
+
 .navbar-avatar--fallback {
   display: flex;
   align-items: center;
