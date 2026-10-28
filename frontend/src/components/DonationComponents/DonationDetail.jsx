@@ -1,3 +1,5 @@
+import { DONATION_TYPE_LABELS } from "../../constants/filters";
+
 export default function DonationDetails({
     donation,
     onClose
@@ -52,9 +54,7 @@ export default function DonationDetails({
                     <div>
                         <span>Tipo de contribuição</span>
                         <strong>
-                            {donation.contributionType === "ITEM"
-                                ? "Item"
-                                : "Voluntariado"}
+                            {DONATION_TYPE_LABELS[donation.type] ?? donation.type}
                         </strong>
                     </div>
 
@@ -65,23 +65,12 @@ export default function DonationDetails({
                         </strong> */}
                     </div>
 
-                    {donation.contributionType === "ITEM" && (
-                        <div>
-                            <span>Quantidade</span>
-                            <strong>
-                                {donation.quantity}
-                            </strong>
-                        </div>
-                    )}
-
-                    {donation.contributionType === "VOLUNTARIADO" && (
-                        <div>
-                            <span>Horas</span>
-                            <strong>
-                                {donation.volunteerHours}
-                            </strong>
-                        </div>
-                    )}
+                    <div>
+                        <span>Quantidade</span>
+                        <strong>
+                            {donation.quantity} {donation.unit}
+                        </strong>
+                    </div>
 
                     <div>
                         <span>Data da solicitação</span>

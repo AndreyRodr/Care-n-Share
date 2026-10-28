@@ -1,14 +1,16 @@
+import { DONATION_STATUS_LABELS } from "../../constants/filters";
+
 const statusConfig = {
-    PENDENTE: {
-        label: "Pendente",
+    PENDING: {
+        label: DONATION_STATUS_LABELS.PENDING,
         className: "donation-status-pending"
     },
-    CONCLUIDA: {
-        label: "Concluída",
+    CHECKED_IN: {
+        label: DONATION_STATUS_LABELS.CHECKED_IN,
         className: "donation-status-completed"
     },
-    CANCELADA: {
-        label: "Cancelada",
+    CANCELLED: {
+        label: DONATION_STATUS_LABELS.CANCELLED,
         className: "donation-status-cancelled"
     }
 };

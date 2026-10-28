@@ -108,22 +108,18 @@ export const inventoryListQuerySchema = z
     search: optionalFilterText,
     category: optionalFilterText,
     status: z
-      .enum(['NORMAL', 'ESTOQUE_BAIXO', 'SEM_ESTOQUE', 'TODOS', 'ALL'])
+      .enum(['NORMAL', 'ESTOQUE_BAIXO', 'SEM_ESTOQUE', 'ALL'])
       .optional()
-      .transform((value) =>
-        value === 'TODOS' || value === 'ALL' ? undefined : value
-      )
+      .transform((value) => (value === 'ALL' ? undefined : value))
   })
   .strict();
 
 export const inventoryMovementQuerySchema = z
   .object({
     type: z
-      .enum(['ENTRADA', 'SAIDA', 'TODOS', 'ALL'])
+      .enum(['ENTRADA', 'SAIDA', 'ALL'])
       .optional()
-      .transform((value) =>
-        value === 'TODOS' || value === 'ALL' ? undefined : value
-      ),
+      .transform((value) => (value === 'ALL' ? undefined : value)),
 
     startDate: dateSchema.optional(),
     endDate: dateSchema.optional(),

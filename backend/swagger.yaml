@@ -120,13 +120,13 @@ paths:
           name: status
           schema:
             type: string
-            enum: [PENDENTE, CONCLUIDA, CANCELADO, PENDING, CHECKED_IN, CANCELLED]
-          description: Filtrar por status da doação
+            enum: [ALL, PENDING, CHECKED_IN, CANCELLED]
+          description: Filtrar por status da doação (ALL ou omitido = sem filtro)
         - in: query
-          name: contributionType
+          name: type
           schema:
             type: string
-            enum: [CREDIT, DEBIT, MONEY, PIX]
+            enum: [ALL, CREDIT, DEBIT, MONEY, PIX]
           description: Filtrar por tipo de transação
       responses:
         '200':
@@ -356,7 +356,7 @@ paths:
           name: status
           schema:
             type: string
-            enum: [NORMAL, ESTOQUE_BAIXO, SEM_ESTOQUE]
+            enum: [ALL, NORMAL, ESTOQUE_BAIXO, SEM_ESTOQUE]
           description: Filtra pelo status calculado do estoque
       responses:
         '200':
@@ -1062,8 +1062,9 @@ components:
               type: string
             title:
               type: string
-        contributionType:
+        type:
           type: string
+          enum: [CREDIT, DEBIT, MONEY, PIX]
         itemName:
           type: string
         quantity:

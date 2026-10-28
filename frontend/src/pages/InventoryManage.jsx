@@ -40,7 +40,7 @@ const InventoryManager = () => {
     function stockCountHandle () {
         let items = [] 
         inventory.filter((item) => {
-            if(item.status === "ESTOQUE BAIXO") {
+            if(item.status === "ESTOQUE_BAIXO") {
                 items.push(item)
             }
         })

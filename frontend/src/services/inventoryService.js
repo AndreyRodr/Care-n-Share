@@ -1,3 +1,4 @@
+import { ALL } from '../constants/filters.js';
 import api from './api.js';
 
 export async function getOngInventory(filters = {}) {
@@ -7,11 +8,11 @@ export async function getOngInventory(filters = {}) {
     params.search = filters.search;
   }
 
-  if (filters.category && filters.category !== 'TODOS') {
+  if (filters.category && filters.category !== ALL) {
     params.category = filters.category;
   }
 
-  if (filters.status && filters.status !== 'TODOS') {
+  if (filters.status && filters.status !== ALL) {
     params.status = filters.status;
   }
 

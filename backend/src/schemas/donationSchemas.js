@@ -91,28 +91,13 @@ export const donationListQuerySchema = z
     search: optionalDonationFilter,
 
     status: z
-      .enum([
-        'PENDENTE',
-        'PENDING',
-        'CONCLUIDA',
-        'CONCLUÍDA',
-        'CHECKED_IN',
-        'CANCELADO',
-        'CANCELADA',
-        'CANCELLED',
-        'TODOS',
-        'ALL'
-      ])
+      .enum(['PENDING', 'CHECKED_IN', 'CANCELLED', 'ALL'])
       .optional()
-      .transform((value) =>
-        value === 'TODOS' || value === 'ALL' ? undefined : value
-      ),
+      .transform((value) => (value === 'ALL' ? undefined : value)),
 
     type: z
-      .enum(['CREDIT', 'DEBIT', 'MONEY', 'PIX', 'TODOS', 'ALL'])
+      .enum(['CREDIT', 'DEBIT', 'MONEY', 'PIX', 'ALL'])
       .optional()
-      .transform((value) =>
-        value === 'TODOS' || value === 'ALL' ? undefined : value
-      )
+      .transform((value) => (value === 'ALL' ? undefined : value))
   })
   .strict();

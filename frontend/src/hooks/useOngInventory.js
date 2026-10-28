@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { ALL } from "../constants/filters";
 import { getOngInventory } from "../services/inventoryService";
 import { postOngMovement } from "../services/movementService";
 
 export default function useOngInventory() {
     const [filters, setFilters] = useState({
         search: "",
-        category: "TODOS",
-        status: "TODOS"
+        category: ALL,
+        status: ALL
     });
 
     const [inventory, setInventory] = useState([{}]);
@@ -31,11 +32,11 @@ export default function useOngInventory() {
             item.itemName?.toLowerCase().includes(search);
 
         const matchesCategory =
-            filters.category === "TODOS" ||
+            filters.category === ALL ||
             item.category === filters.category;
 
         const matchesStatus =
-            filters.status === "TODOS" ||
+            filters.status === ALL ||
             item.status === filters.status;
 
         return (

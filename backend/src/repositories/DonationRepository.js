@@ -12,7 +12,7 @@ class DonationRepository {
     });
   }
 
-  async findAll(ongId, { search, status, contributionType }) {
+  async findAll(ongId, { search, status, type }) {
     const whereCondition = { ongId };
 
     // Busca por nome do doador ou item
@@ -35,40 +35,13 @@ class DonationRepository {
       ];
     }
 
-    // Filtro por status
-    if (
-      status &&
-      status.toUpperCase() !== "TODOS" &&
-      status.toUpperCase() !== "ALL"
-    ) {
-      const statusMap = {
-        PENDENTE: "PENDING",
-        PENDING: "PENDING",
-
-        CONCLUIDA: "CHECKED_IN",
-        CONCLUÍDA: "CHECKED_IN",
-        CHECKED_IN: "CHECKED_IN",
-
-        CANCELADO: "CANCELLED",
-        CANCELADA: "CANCELLED",
-        CANCELLED: "CANCELLED",
-      };
-
-      const normalizedStatus = status.toUpperCase();
-      const mappedStatus = statusMap[normalizedStatus];
-
-      if (mappedStatus) {
-        whereCondition.status = mappedStatus;
-      }
+    // Os filtros já chegam validados e normalizados (valores do enum do banco)
+    if (status) {
+      whereCondition.status = status;
     }
 
-    // Filtro por tipo de contribuição
-    if (
-      contributionType &&
-      contributionType.toUpperCase() !== "TODOS" &&
-      contributionType.toUpperCase() !== "ALL"
-    ) {
-      whereCondition.type = contributionType.toUpperCase();
+    if (type) {
+      whereCondition.type = type;
     }
 
     return await prisma.donationCheckin.findMany({

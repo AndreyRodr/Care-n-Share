@@ -1,4 +1,5 @@
 import DonationStatusBadge from "./DonationBadge";
+import { DONATION_TYPE_LABELS } from "../../constants/filters";
 
 export default function DonationCard({
     donation,
@@ -27,18 +28,11 @@ export default function DonationCard({
                     {donation.description}
                 </p>
 
-                {donation.contributionType === "ITEM" && (
-                    <span>
-                        Quantidade: {donation.quantity}
-                    </span>
-                )}
-
-                {donation.contributionType === "VOLUNTARIADO" && (
-                    <span>
-                        Horas de voluntariado:{" "}
-                        {donation.volunteerHours}
-                    </span>
-                )}
+                <span>
+                    {DONATION_TYPE_LABELS[donation.type] ?? donation.type}
+                    {" · "}
+                    Quantidade: {donation.quantity} {donation.unit}
+                </span>
             </div>
 
             <div className="donation-card-footer">
@@ -58,7 +52,7 @@ export default function DonationCard({
                         Ver detalhes
                     </button>
 
-                    {donation.status === "PENDENTE" && (
+                    {donation.status === "PENDING" && (
                         <button
                             className="donation-button button-primary"
                             onClick={() => onConfirm(donation)}

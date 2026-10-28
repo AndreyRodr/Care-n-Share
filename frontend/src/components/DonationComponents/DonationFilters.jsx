@@ -1,3 +1,5 @@
+import { ALL, DONATION_STATUS_LABELS, DONATION_TYPE_LABELS } from "../../constants/filters";
+
 export default function DonationsFilters({ filters, setFilters }) {
 
     function handleChange(event) {
@@ -27,39 +29,31 @@ export default function DonationsFilters({ filters, setFilters }) {
                 value={filters.status}
                 onChange={handleChange}
             >
-                <option value="TODOS">
+                <option value={ALL}>
                     Todos os status
                 </option>
 
-                <option value="PENDENTE">
-                    Pendentes
-                </option>
-
-                <option value="CONCLUIDA">
-                    Concluídas
-                </option>
-
-                <option value="CANCELADA">
-                    Canceladas
-                </option>
+                {Object.entries(DONATION_STATUS_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                        {label}
+                    </option>
+                ))}
             </select>
 
             <select
-                name="contributionType"
-                value={filters.contributionType}
+                name="type"
+                value={filters.type}
                 onChange={handleChange}
             >
-                <option value="TODOS">
+                <option value={ALL}>
                     Todos os tipos
                 </option>
 
-                <option value="ITEM">
-                    Itens
-                </option>
-
-                <option value="VOLUNTARIADO">
-                    Voluntariado
-                </option>
+                {Object.entries(DONATION_TYPE_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                        {label}
+                    </option>
+                ))}
             </select>
 
         </section>

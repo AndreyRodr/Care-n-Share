@@ -1,4 +1,5 @@
 import api from './api.js';
+import { ALL } from '../constants/filters.js';
 
 export async function getOngDonations(filters = {}) {
   const params = {};
@@ -7,12 +8,12 @@ export async function getOngDonations(filters = {}) {
     params.search = filters.search;
   }
 
-  if (filters.status && filters.status !== 'ALL') {
+  if (filters.status && filters.status !== ALL) {
     params.status = filters.status;
   }
 
-  if (filters.contributionType && filters.contributionType !== 'ALL') {
-    params.type = filters.contributionType;
+  if (filters.type && filters.type !== ALL) {
+    params.type = filters.type;
   }
 
   const response = await api.get('/api/ong/donations', { params });

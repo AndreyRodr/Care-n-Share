@@ -28,9 +28,9 @@ class DonationController {
   async getAll(req, res) {
     try {
       const ongId = req.user.id;
-      const { search, status, contributionType } = req.validatedQuery;
+      const { search, status, type } = req.validatedQuery;
 
-      const donations = await donationRepository.findAll(ongId, { search, status, contributionType });
+      const donations = await donationRepository.findAll(ongId, { search, status, type });
 
       return res.status(200).json(donations);
     } catch (error) {

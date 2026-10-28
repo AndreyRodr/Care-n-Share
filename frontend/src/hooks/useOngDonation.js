@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ALL } from "../constants/filters";
 import {
     getOngDonations,
     completeDonation,
@@ -11,8 +12,8 @@ export default function useOngDonations() {
 
     const [filters, setFilters] = useState({
         search: "",
-        status: "ALL",
-        contributionType: "ALL",
+        status: ALL,
+        type: ALL,
     });
 
     useEffect(() => {
@@ -45,12 +46,12 @@ export default function useOngDonations() {
             donation.itemName?.toLowerCase().includes(search);
 
         const matchesStatus =
-            filters.status === "ALL" ||
+            filters.status === ALL ||
             donation.status === filters.status;
 
         const matchesType =
-            filters.contributionType === "ALL" ||
-            donation.type === filters.contributionType;
+            filters.type === ALL ||
+            donation.type === filters.type;
 
         return matchesSearch && matchesStatus && matchesType;
     });
@@ -64,7 +65,7 @@ export default function useOngDonations() {
                     donation.id === id
                         ? {
                             ...donation,
-                            status: "CONCLUIDA",
+                            status: "CHECKED_IN",
                         }
                         : donation,
                 ),

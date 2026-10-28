@@ -1,3 +1,4 @@
+import { ALL, INVENTORY_STATUS_LABELS } from "../../constants/filters";
 import { mockInventoryCategories } from "../../mocks/inventory";
 
 const InventoryFilter = ({ filters, setFilters }) => {
@@ -29,21 +30,15 @@ const InventoryFilter = ({ filters, setFilters }) => {
                 value={filters.status}
                 onChange={handleChange}
             >
-                <option value="TODOS">
-                    Todos
+                <option value={ALL}>
+                    Todos os status
                 </option>
 
-                <option value="NORMAL">
-                    Normal
-                </option>
-
-                <option value="ESTOQUE_BAIXO">
-                    Estoque Baixo
-                </option>
-
-                <option value="SEM_ESTOQUE">
-                    Sem estoque
-                </option>
+                {Object.entries(INVENTORY_STATUS_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                        {label}
+                    </option>
+                ))}
             </select>
 
             <select
@@ -51,7 +46,7 @@ const InventoryFilter = ({ filters, setFilters }) => {
                 value={filters.category}
                 onChange={handleChange}
             >
-                <option value='TODOS'>
+                <option value={ALL}>
                     Todas as categorias
                 </option>
                 {mockInventoryCategories.map((category) => (
