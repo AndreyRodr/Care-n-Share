@@ -13,7 +13,7 @@ class CauseRepository {
         _count: {
           select: {
             interestedUsers: true,
-            projects: true
+            posts: true
           }
         }
       },
@@ -25,7 +25,7 @@ class CauseRepository {
     return await prisma.cause.findUnique({
       where: { id },
       include: {
-        projects: {
+        posts: {
           select: {
             id: true,
             title: true,

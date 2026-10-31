@@ -46,7 +46,7 @@ export const createDonationSchema = z
     type: donationTypeSchema,
     unit: unitSchema,
     donorId: z.string().uuid('O identificador do doador é inválido.'),
-    projectId: z
+    postId: z
       .string()
       .uuid('O identificador do projeto é inválido.')
       .optional()

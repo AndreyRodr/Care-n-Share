@@ -4,7 +4,7 @@ import donationRepository from '../repositories/DonationRepository.js';
 class DonationController {
   async create(req, res) {
     try {
-      const { itemName, category, quantity, type, unit, donorId, projectId } = req.body;
+      const { itemName, category, quantity, type, unit, donorId, postId } = req.body;
       const ongId = req.user.id;
 
       const donation = await donationRepository.create({
@@ -15,7 +15,7 @@ class DonationController {
         unit,
         donorId,
         ongId,
-        projectId
+        postId
       });
 
       return res.status(201).json(donation);

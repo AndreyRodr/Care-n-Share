@@ -269,69 +269,6 @@ paths:
           description: Doação cancelada.
 
   # ==========================================
-  # GERENCIAMENTO DE PROJETOS / METAS
-  # ==========================================
-  /api/projects:
-    get:
-      summary: Listar todos os projetos/metas da ONG
-      tags:
-        - Projetos
-      responses:
-        '200':
-          description: Lista de projetos ativos e concluídos.
-
-    post:
-      summary: Criar um novo projeto ou meta
-      tags:
-        - Projetos
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectInput'
-      responses:
-        '201':
-          description: Projeto criado com sucesso.
-
-  /api/projects/{id}:
-    get:
-      summary: Detalhes do projeto
-      tags:
-        - Projetos
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      responses:
-        '200':
-          description: Dados do projeto.
-
-    put:
-      summary: Atualizar um projeto existente
-      tags:
-        - Projetos
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectInput'
-      responses:
-        '200':
-          description: Projeto atualizado.
-
-    delete:
-      summary: Deletar um projeto
-      tags:
-        - Projetos
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      responses:
-        '200':
-          description: Projeto removido.
-
-  # ==========================================
   # CONTROLE DE ESTOQUE
   # ==========================================
   /api/ong/inventory:
@@ -1038,7 +975,7 @@ components:
         donorId:
           type: string
           example: "uuid-do-usuario-doador"
-        projectId:
+        postId:
           type: string
           example: "uuid-do-projeto-opcional"
 
@@ -1080,24 +1017,6 @@ components:
       properties:
         amount:
           type: number
-
-    ProjectInput:
-      type: object
-      required:
-        - title
-        - description
-      properties:
-        title:
-          type: string
-          example: "Reforma da Cozinha Comunitária"
-        description:
-          type: string
-          example: "Arrecadação de materiais de construção para reforma"
-        causeIds:
-          type: array
-          items:
-            type: string
-          example: ["uuid-causa-1", "uuid-causa-2"]
 
     InventoryInput:
       type: object
@@ -1158,7 +1077,7 @@ components:
             interestedUsers:
               type: integer
               example: 15
-            projects:
+            posts:
               type: integer
               example: 3
 
@@ -1167,7 +1086,7 @@ components:
         - $ref: '#/components/schemas/Cause'
         - type: object
           properties:
-            projects:
+            posts:
               type: array
               items:
                 type: object

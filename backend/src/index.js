@@ -8,7 +8,6 @@ import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import ongRoutes from './routes/ongRoutes.js';
 import inventoryRoutes from './routes/inventoryRoutes.js';
-import projectRoutes from './routes/projectRoutes.js';
 import causeRoutes from './routes/causeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
@@ -32,7 +31,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/ong', ongRoutes);
 app.use('/api/ong/inventory', inventoryRoutes);
-app.use('/api/projects', projectRoutes);
 app.use('/api/causes', causeRoutes);
 app.use('/api/admin', adminRoutes);
 

@@ -6,7 +6,7 @@ class OngDashboardRepository {
       prisma.donationCheckin.count({ where: { ongId } }),
       prisma.donationCheckin.count({ where: { ongId, status: 'PENDING' } }),
       prisma.donationCheckin.count({ where: { ongId, status: 'CHECKED_IN' } }),
-      prisma.project.count({ where: { ongId } }),
+      prisma.post.count({ where: { ongId } }),
     ]);
 
     return {
@@ -45,7 +45,7 @@ class OngDashboardRepository {
   }
 
   async getGoalsProgress(ongId) {
-    const projects = await prisma.project.findMany({
+    const posts = await prisma.post.findMany({
       where: { ongId },
       include: {
         donationCheckins: {
@@ -54,14 +54,14 @@ class OngDashboardRepository {
       },
     });
 
-    return projects.map((project) => {
-      const current = project.donationCheckins.reduce((acc, item) => acc + Number(item.quantity), 0);
+    return posts.map((post) => {
+      const current = post.donationCheckins.reduce((acc, item) => acc + Number(item.quantity), 0);
       const target = 100; // Meta de referência
       const percentage = Math.min(Math.round((current / target) * 100), 100);
 
       return {
-        id: project.id,
-        title: project.title,
+        id: post.id,
+        title: post.title,
         current,
         target,
         percentage,
