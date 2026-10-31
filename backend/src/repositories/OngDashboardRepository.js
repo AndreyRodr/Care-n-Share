@@ -47,26 +47,13 @@ class OngDashboardRepository {
   async getGoalsProgress(ongId) {
     const posts = await prisma.post.findMany({
       where: { ongId },
-      include: {
-        donationCheckins: {
-          where: { status: 'CHECKED_IN' },
-        },
-      },
     });
 
-    return posts.map((post) => {
-      const current = post.donationCheckins.reduce((acc, item) => acc + Number(item.quantity), 0);
-      const target = 100; // Meta de referência
-      const percentage = Math.min(Math.round((current / target) * 100), 100);
-
-      return {
-        id: post.id,
-        title: post.title,
-        current,
-        target,
-        percentage,
-      };
-    });
+    return {
+      goals: posts.reduce((total, post) => {
+        return total + post.amountRaised.toNumber();
+      }, 0)
+    };
   }
 
   async getVolunteersStats(ongId) {
@@ -101,9 +88,8 @@ class OngDashboardRepository {
     return checkins.map((item) => ({
       id: item.id,
       type: item.status === 'CHECKED_IN' ? 'DONATION_COMPLETED' : 'DONATION_CREATED',
-      description: `${item.donor.name} ${
-        item.status === 'CHECKED_IN' ? 'realizou uma doação' : 'registrou uma intenção de doação'
-      }`,
+      description: `${item.donor.name} ${item.status === 'CHECKED_IN' ? 'realizou uma doação' : 'registrou uma intenção de doação'
+        }`,
       createdAt: item.createdAt,
     }));
   }
