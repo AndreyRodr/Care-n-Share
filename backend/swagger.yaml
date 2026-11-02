@@ -12,6 +12,440 @@ security:
 
 paths:
   # ==========================================
+  # POSTS E PROJETOS (TABELA UNIFICADA)
+  # ==========================================
+  /api/posts:
+    get:
+      summary: Listar todas as publicações e projetos
+      tags:
+        - Posts
+      security: []
+      responses:
+        '200':
+          description: Lista de publicações retornada com sucesso.
+          content:
+            application/json:
+              example:
+                - id: "uuid-post-1"
+                  title: "Ajude a construir nossa sede"
+                  content: "Precisamos arrecadar recursos."
+                  image: "https://cloudinary.com/image.jpg"
+                  fundraisingGoal: "15000.00"
+                  amountRaised: "8500.00"
+                  fundraisingDeadline: "2026-12-31T23:59:59.000Z"
+                  createdAt: "2026-10-31T12:00:00.000Z"
+                  ong:
+                    id: "uuid-ong"
+                    name: "ONG Exemplo"
+                    profilePicture: null
+        '500':
+          description: Erro ao buscar publicações.
+
+    post:
+      summary: Criar publicação ou projeto
+      description: Apenas ONGs aprovadas podem criar publicações. Envio via multipart/form-data.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: "Ajude a construir nossa sede"
+                content:
+                  type: string
+                  example: "Precisamos arrecadar recursos."
+                fundraisingGoal:
+                  type: number
+                  minimum: 0
+                  example: 15000
+                fundraisingDeadline:
+                  type: string
+                  format: date-time
+                  nullable: true
+                  example: "2026-12-31T23:59:59.000Z"
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Publicação criada com sucesso.
+          content:
+            application/json:
+              example:
+                message: "Publicação criada com sucesso."
+                post:
+                  id: "uuid-post-1"
+                  title: "Ajude a construir nossa sede"
+                  fundraisingGoal: "15000.00"
+                  amountRaised: "0.00"
+        '400':
+          description: Dados inválidos.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Apenas ONGs aprovadas podem criar publicações.
+        '500':
+          description: Erro ao criar publicação.
+
+  /api/posts/{postId}:
+    get:
+      summary: Buscar publicação por ID
+      tags:
+        - Posts
+      security: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Publicação encontrada.
+          content:
+            application/json:
+              example:
+                id: "uuid-post-1"
+                title: "Ajude a construir nossa sede"
+                content: "Precisamos arrecadar recursos."
+                fundraisingGoal: "15000.00"
+                amountRaised: "8500.00"
+                fundraisingDeadline: "2026-12-31T23:59:59.000Z"
+        '404':
+          description: Publicação não encontrada.
+        '500':
+          description: Erro ao buscar publicação.
+
+    put:
+      summary: Atualizar publicação ou projeto
+      description: Apenas a ONG proprietária, aprovada e autenticada pode atualizar a publicação. Envio via multipart/form-data.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Nova meta para construção da sede"
+                content:
+                  type: string
+                  example: "Atualização sobre nossa campanha."
+                fundraisingGoal:
+                  type: number
+                  minimum: 0
+                  example: 20000
+                fundraisingDeadline:
+                  type: string
+                  format: date-time
+                  nullable: true
+                amountRaised:
+                  type: number
+                  minimum: 0
+                  example: 20000
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Publicação atualizada com sucesso.
+          content:
+            application/json:
+              example:
+                message: "Publicação atualizada com sucesso."
+                post:
+                  id: "uuid-post-1"
+                  title: "Nova meta para construção da sede"
+                  fundraisingGoal: "20000.00"
+        '400':
+          description: Dados inválidos.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Sem permissão para atualizar esta publicação.
+        '404':
+          description: Publicação não encontrada.
+        '500':
+          description: Erro ao atualizar publicação.
+
+    delete:
+      summary: Excluir publicação ou projeto
+      description: Apenas a ONG proprietária, aprovada e autenticada pode excluir a publicação.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Publicação excluída com sucesso.
+          content:
+            application/json:
+              example:
+                message: "Publicação excluída com sucesso."
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Sem permissão para excluir esta publicação.
+        '404':
+          description: Publicação não encontrada.
+        '500':
+          description: Erro ao excluir publicação.
+
+  /api/posts/ong/{ongId}:
+    get:
+      summary: Listar publicações de uma ONG
+      tags:
+        - Posts
+      security: []
+      parameters:
+        - name: ongId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Publicações da ONG retornadas com sucesso.
+          content:
+            application/json:
+              example:
+                - id: "uuid-post-1"
+                  title: "Campanha de arrecadação"
+                  content: "Ajude nossa ONG."
+                  fundraisingGoal: "10000.00"
+                  amountRaised: "5000.00"
+                  fundraisingDeadline: "2026-12-31T23:59:59.000Z"
+        '400':
+          description: ID da ONG inválido.
+        '500':
+          description: Erro ao buscar publicações da ONG.
+
+  /api/posts/{postId}/causes:
+    get:
+      summary: Listar causas associadas a um post
+      tags:
+        - Post Causes
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Causas do post retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  causes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "404":
+          description: Post não encontrado
+
+    post:
+      summary: Adicionar causas a um post
+      tags:
+        - Post Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas adicionadas ao post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  causes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+        "403":
+          description: Usuário sem permissão para editar este post
+        "404":
+          description: Post não encontrado
+
+    put:
+      summary: Substituir todas as causas de um post
+      description: Envie um array vazio para remover todas as causas associadas.
+      tags:
+        - Post Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas do post atualizadas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  causes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+        "403":
+          description: Usuário sem permissão para editar este post
+        "404":
+          description: Post não encontrado
+
+  /api/posts/{postId}/causes/{causeId}:
+    delete:
+      summary: Remover uma causa de um post
+      tags:
+        - Post Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+        - name: causeId
+          in: path
+          required: true
+          description: ID da causa
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Causa removida do post
+        "401":
+          description: Não autenticado
+        "403":
+          description: Usuário sem permissão para editar este post
+        "404":
+          description: Post ou causa não encontrado
+
+  /api/posts/matches/me:
+    get:
+      summary: Buscar posts recomendados para o usuário autenticado
+      description: |
+        Utiliza as causas de interesse do usuário para encontrar posts
+        relacionados. Os resultados são ordenados pela quantidade de
+        causas correspondentes, com os mais recentes como critério de desempate.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Posts recomendados encontrados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Posts recomendados encontrados com sucesso.
+                  totalInterests:
+                    type: integer
+                    example: 4
+                  posts:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: "#/components/schemas/Post"
+                        - type: object
+                          properties:
+                            matchScore:
+                              type: integer
+                              example: 3
+                              description: Quantidade de causas correspondentes.
+                            matchPercentage:
+                              type: integer
+                              example: 75
+                              description: Percentual dos interesses do usuário atendidos pelo post.
+                            matchedCauses:
+                              type: array
+                              items:
+                                $ref: "#/components/schemas/Cause"
+        "401":
+          description: Usuário não autenticado
+        "404":
+          description: Usuário não encontrado
+        "500":
+          description: Erro interno do servidor
+
+  # ==========================================
   # DASHBOARD DA ONG
   # ==========================================
   /api/ong/dashboard/summary:
@@ -267,69 +701,6 @@ paths:
       responses:
         '200':
           description: Doação cancelada.
-
-  # ==========================================
-  # GERENCIAMENTO DE PROJETOS / METAS
-  # ==========================================
-  /api/projects:
-    get:
-      summary: Listar todos os projetos/metas da ONG
-      tags:
-        - Projetos
-      responses:
-        '200':
-          description: Lista de projetos ativos e concluídos.
-
-    post:
-      summary: Criar um novo projeto ou meta
-      tags:
-        - Projetos
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectInput'
-      responses:
-        '201':
-          description: Projeto criado com sucesso.
-
-  /api/projects/{id}:
-    get:
-      summary: Detalhes do projeto
-      tags:
-        - Projetos
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      responses:
-        '200':
-          description: Dados do projeto.
-
-    put:
-      summary: Atualizar um projeto existente
-      tags:
-        - Projetos
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProjectInput'
-      responses:
-        '200':
-          description: Projeto atualizado.
-
-    delete:
-      summary: Deletar um projeto
-      tags:
-        - Projetos
-      parameters:
-        - $ref: '#/components/parameters/PathId'
-      responses:
-        '200':
-          description: Projeto removido.
 
   # ==========================================
   # CONTROLE DE ESTOQUE
@@ -834,6 +1205,112 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /api/users/causes:
+    get:
+      summary: Listar causas de interesse do usuário autenticado
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Causas de interesse retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interestedCauses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "401":
+          description: Não autenticado
+        "404":
+          description: Usuário não encontrado
+
+    post:
+      summary: Adicionar causas aos interesses do usuário
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas adicionadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interestedCauses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+
+    put:
+      summary: Substituir todas as causas de interesse do usuário
+      description: Envie um array vazio para remover todas as causas de interesse.
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas atualizadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interestedCauses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+
+  /api/users/causes/{causeId}:
+    delete:
+      summary: Remover uma causa dos interesses do usuário
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: causeId
+          in: path
+          required: true
+          description: ID da causa
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Causa removida dos interesses
+        "401":
+          description: Não autenticado
+        "404":
+          description: Usuário ou causa não encontrado
+
   # ==========================================
   # CAUSES
   # ==========================================
@@ -977,6 +1454,87 @@ components:
             error: "Recurso não encontrado."
 
   schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+          nullable: true
+        fundraisingGoal:
+          type: number
+          format: double
+          example: 15000.00
+        amountRaised:
+          type: number
+          format: double
+          example: 8500.00
+        fundraisingDeadline:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        ongId:
+          type: string
+          format: uuid
+    CreatePost:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 150
+        content:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        fundraisingGoal:
+          type: number
+          minimum: 0
+          default: 0
+        fundraisingDeadline:
+          type: string
+          format: date-time
+          nullable: true
+        image:
+          type: string
+          format: binary
+    UpdatePost:
+      type: object
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 150
+        content:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        fundraisingGoal:
+          type: number
+          minimum: 0
+        fundraisingDeadline:
+          type: string
+          format: date-time
+          nullable: true
+        image:
+          type: string
+          format: binary
     UserProfile:
       type: object
       properties:
@@ -1038,7 +1596,7 @@ components:
         donorId:
           type: string
           example: "uuid-do-usuario-doador"
-        projectId:
+        postId:
           type: string
           example: "uuid-do-projeto-opcional"
 
@@ -1080,24 +1638,6 @@ components:
       properties:
         amount:
           type: number
-
-    ProjectInput:
-      type: object
-      required:
-        - title
-        - description
-      properties:
-        title:
-          type: string
-          example: "Reforma da Cozinha Comunitária"
-        description:
-          type: string
-          example: "Arrecadação de materiais de construção para reforma"
-        causeIds:
-          type: array
-          items:
-            type: string
-          example: ["uuid-causa-1", "uuid-causa-2"]
 
     InventoryInput:
       type: object
@@ -1158,16 +1698,31 @@ components:
             interestedUsers:
               type: integer
               example: 15
-            projects:
+            posts:
               type: integer
               example: 3
+
+    CauseIdsInput:
+      type: object
+      properties:
+        causeIds:
+          type: array
+          description: IDs das causas que serão associadas.
+          items:
+            type: string
+            format: uuid
+          example:
+            - "550e8400-e29b-41d4-a716-446655440000"
+            - "650e8400-e29b-41d4-a716-446655440000"
+      required:
+        - causeIds
 
     CauseDetail:
       allOf:
         - $ref: '#/components/schemas/Cause'
         - type: object
           properties:
-            projects:
+            posts:
               type: array
               items:
                 type: object

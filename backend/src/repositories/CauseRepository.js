@@ -13,7 +13,7 @@ class CauseRepository {
         _count: {
           select: {
             interestedUsers: true,
-            projects: true
+            posts: true
           }
         }
       },
@@ -25,16 +25,25 @@ class CauseRepository {
     return await prisma.cause.findUnique({
       where: { id },
       include: {
-        projects: {
+        posts: {
           select: {
             id: true,
             title: true,
-            description: true,
-            ong: { select: { id: true, name: true } }
+            content: true,
+            image: true,
+            ong: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
           }
         },
         _count: {
-          select: { interestedUsers: true }
+          select: {
+            interestedUsers: true,
+            posts: true
+          }
         }
       }
     });
@@ -56,6 +65,108 @@ class CauseRepository {
   async delete(id) {
     return await prisma.cause.delete({
       where: { id }
+    });
+  }
+
+  async findUserCauses(userId) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        interestedCauses: true
+      }
+    });
+  }
+
+  async addUserCauses(userId, causeIds) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        interestedCauses: {
+          connect: causeIds.map(id => ({ id }))
+        }
+      },
+      include: {
+        interestedCauses: true
+      }
+    });
+  }
+
+  async setUserCauses(userId, causeIds) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        interestedCauses: {
+          set: causeIds.map(id => ({ id }))
+        }
+      },
+      include: {
+        interestedCauses: true
+      }
+    });
+  }
+
+  async removeUserCause(userId, causeId) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        interestedCauses: {
+          disconnect: { id: causeId }
+        }
+      },
+      include: {
+        interestedCauses: true
+      }
+    });
+  }
+
+  async findPostCauses(postId) {
+    return prisma.post.findUnique({
+      where: { id: postId },
+      select: {
+        causes: true
+      }
+    });
+  }
+
+  async addPostCauses(postId, causeIds) {
+    return prisma.post.update({
+      where: { id: postId },
+      data: {
+        causes: {
+          connect: causeIds.map(id => ({ id }))
+        }
+      },
+      include: {
+        causes: true
+      }
+    });
+  }
+
+  async setPostCauses(postId, causeIds) {
+    return prisma.post.update({
+      where: { id: postId },
+      data: {
+        causes: {
+          set: causeIds.map(id => ({ id }))
+        }
+      },
+      include: {
+        causes: true
+      }
+    });
+  }
+
+  async removePostCause(postId, causeId) {
+    return prisma.post.update({
+      where: { id: postId },
+      data: {
+        causes: {
+          disconnect: { id: causeId }
+        }
+      },
+      include: {
+        causes: true
+      }
     });
   }
 }

@@ -10,6 +10,12 @@ import {
 } from '../schemas/userSchemas.js';
 import { idParamSchema } from '../schemas/commonSchemas.js';
 import requireOngDocuments from '../middlewares/requireOngDocumentsMiddleware.js';
+import causeController from '../controllers/CauseController.js';
+
+import {
+  causesSchema,
+  causeIdParamSchema
+} from '../schemas/causeSchemas.js';
 
 const router = Router();
 
@@ -33,6 +39,7 @@ router.get(
   validate(idParamSchema, 'params'),
   userController.getProfile
 );
+
 // Rotas Privadas (Necessitam de Token)
 router.get('/me', authMiddleware, userController.getMe);
 router.post('/logout', authMiddleware, userController.logout);
@@ -56,4 +63,32 @@ router.put(
   validate(updateProfileSchema),
   userController.update
 );
+
+router.get(
+  '/causes',
+  authMiddleware,
+  causeController.getUserCauses
+);
+
+router.post(
+  '/causes',
+  authMiddleware,
+  validate(causesSchema),
+  causeController.addUserCauses
+);
+
+router.put(
+  '/causes',
+  authMiddleware,
+  validate(causesSchema),
+  causeController.setUserCauses
+);
+
+router.delete(
+  '/causes/:causeId',
+  authMiddleware,
+  validate(causeIdParamSchema, 'params'),
+  causeController.removeUserCause
+);
+
 export default router;

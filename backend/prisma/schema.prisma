@@ -41,8 +41,7 @@ model User {
   // Causas de interesse do usuário, usadas também para recomendações de ONGs/projetos.
   interestedCauses Cause[] @relation("UserCauses")
 
-  posts    Post[]    @relation("UserPosts")
-  projects Project[] @relation("OngProjects")
+  posts Post[] @relation("UserPosts")
 
   donationsMade      DonationCheckin[]   @relation("DonationDonor")
   donationsReceived  DonationCheckin[]   @relation("DonationOng")
@@ -84,8 +83,18 @@ model Post {
   image     String?
   createdAt DateTime @default(now())
 
+  fundraisingGoal     Decimal  @default(0) @db.Decimal(12, 2)
+  amountRaised        Decimal  @default(0) @db.Decimal(12, 2)
+  fundraisingDeadline DateTime?
+
   ongId String
   ong   User   @relation("UserPosts", fields: [ongId], references: [id])
+
+
+  causes Cause[] @relation("PostCauses")
+  donationCheckins DonationCheckin[]
+
+  @@index([ongId])
 }
 
 model Cause {
@@ -95,25 +104,7 @@ model Cause {
   createdAt   DateTime @default(now())
 
   interestedUsers User[]    @relation("UserCauses")
-  projects        Project[] @relation("ProjectCauses")
-}
-
-model Project {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  image       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Todo projeto é criado por uma ONG (usuário cujo type é O).
-  ongId String
-  ong   User   @relation("OngProjects", fields: [ongId], references: [id])
-
-  // Um projeto pode atender várias causas, e uma causa pode estar em vários projetos.
-  causes Cause[] @relation("ProjectCauses")
-
-  donationCheckins DonationCheckin[]
+  posts Post[] @relation("PostCauses")
 }
 
 enum DonationCheckinStatus {
@@ -151,8 +142,8 @@ model DonationCheckin {
   validatedById String?
   validatedBy   User?   @relation("DonationValidator", fields: [validatedById], references: [id])
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  postId String?
+  post   Post? @relation(fields: [postId], references: [id])
 
   @@index([ongId, status])
   @@index([donorId])

@@ -41,7 +41,7 @@ export default function useOngDonations() {
         const matchesSearch =
             !search ||
             donation.donor?.name?.toLowerCase().includes(search) ||
-            donation.project?.title?.toLowerCase().includes(search) ||
+            donation.post?.title?.toLowerCase().includes(search) ||
             donation.itemName?.toLowerCase().includes(search);
 
         const matchesStatus =

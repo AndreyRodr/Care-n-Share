@@ -7,7 +7,7 @@ class DonationRepository {
       data,
       include: {
         donor: { select: { id: true, name: true, email: true } },
-        project: { select: { id: true, title: true } },
+        post: { select: { id: true, title: true } },
       },
     });
   }
@@ -80,7 +80,7 @@ class DonationRepository {
             name: true,
           },
         },
-        project: {
+        post: {
           select: {
             id: true,
             title: true,
@@ -98,7 +98,7 @@ class DonationRepository {
       where: { id, ongId },
       include: {
         donor: { select: { id: true, name: true, email: true } },
-        project: { select: { id: true, title: true } },
+        post: { select: { id: true, title: true } },
         validatedBy: { select: { id: true, name: true } },
       },
     });
