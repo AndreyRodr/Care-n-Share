@@ -1,4 +1,5 @@
 import causeRepository from '../repositories/CauseRepository.js';
+import PostRepository from '../repositories/PostRepository.js';
 
 class CauseController {
   async create(req, res) {
@@ -87,6 +88,229 @@ class CauseController {
     } catch (error) {
       console.error('Erro ao deletar causa:', error);
       return res.status(400).json({ error: 'Erro ao remover causa.' });
+    }
+  }
+
+  async getUserCauses(req, res) {
+    try {
+      const userId = req.user.id;
+
+      const result = await causeRepository.findUserCauses(userId);
+
+      if (!result) {
+        return res.status(404).json({
+          error: 'Usuário não encontrado.'
+        });
+      }
+
+      return res.status(200).json(result.interestedCauses);
+    } catch (error) {
+      console.error('Erro ao buscar causas do usuário:', error);
+
+      return res.status(500).json({
+        error: 'Erro ao buscar causas de interesse.'
+      });
+    }
+  }
+
+  async addUserCauses(req, res) {
+    try {
+      const userId = req.user.id;
+      const { causeIds } = req.body;
+
+      const result = await causeRepository.addUserCauses(
+        userId,
+        causeIds
+      );
+
+      return res.status(200).json({
+        message: 'Causas adicionadas com sucesso.',
+        causes: result.interestedCauses
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar causas do usuário:', error);
+
+      return res.status(400).json({
+        error: 'Não foi possível adicionar as causas. Verifique os IDs informados.'
+      });
+    }
+  }
+
+  async setUserCauses(req, res) {
+    try {
+      const userId = req.user.id;
+      const { causeIds } = req.body;
+
+      const result = await causeRepository.setUserCauses(
+        userId,
+        causeIds
+      );
+
+      return res.status(200).json({
+        message: 'Causas de interesse atualizadas com sucesso.',
+        causes: result.interestedCauses
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar causas do usuário:', error);
+
+      return res.status(400).json({
+        error: 'Não foi possível atualizar as causas. Verifique os IDs informados.'
+      });
+    }
+  }
+
+  async removeUserCause(req, res) {
+    try {
+      const userId = req.user.id;
+      const { causeId } = req.params;
+
+      const result = await causeRepository.removeUserCause(
+        userId,
+        causeId
+      );
+
+      return res.status(200).json({
+        message: 'Causa removida das preferências com sucesso.',
+        causes: result.interestedCauses
+      });
+    } catch (error) {
+      console.error('Erro ao remover causa do usuário:', error);
+
+      return res.status(400).json({
+        error: 'Não foi possível remover a causa.'
+      });
+    }
+  }
+
+  async getPostCauses(req, res) {
+    try {
+      const { postId } = req.params;
+
+      const result = await causeRepository.findPostCauses(postId);
+
+      if (!result) {
+        return res.status(404).json({
+          error: 'Publicação não encontrada.'
+        });
+      }
+
+      return res.status(200).json(result.causes);
+    } catch (error) {
+      console.error('Erro ao buscar causas da publicação:', error);
+
+      return res.status(500).json({
+        error: 'Erro ao buscar causas da publicação.'
+      });
+    }
+  }
+
+  async addPostCauses(req, res) {
+    try {
+      const { postId } = req.params;
+      const { causeIds } = req.body;
+
+      const post = await PostRepository.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          error: 'Publicação não encontrada.'
+        });
+      }
+
+      if (post.ongId !== req.user.id) {
+        return res.status(403).json({
+          error: 'Você não tem permissão para modificar esta publicação.'
+        });
+      }
+
+      const result = await causeRepository.addPostCauses(
+        postId,
+        causeIds
+      );
+
+      return res.status(200).json({
+        message: 'Causas adicionadas à publicação com sucesso.',
+        causes: result.causes
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar causas à publicação:', error);
+
+      return res.status(400).json({
+        error: 'Não foi possível adicionar as causas. Verifique os IDs informados.'
+      });
+    }
+  }
+
+  async setPostCauses(req, res) {
+    try {
+      const { postId } = req.params;
+      const { causeIds } = req.body;
+
+      const post = await PostRepository.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          error: 'Publicação não encontrada.'
+        });
+      }
+
+      if (post.ongId !== req.user.id) {
+        return res.status(403).json({
+          error: 'Você não tem permissão para modificar esta publicação.'
+        });
+      }
+
+      const result = await causeRepository.setPostCauses(
+        postId,
+        causeIds
+      );
+
+      return res.status(200).json({
+        message: 'Causas da publicação atualizadas com sucesso.',
+        causes: result.causes
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar causas da publicação:', error);
+
+      return res.status(400).json({
+        error: 'Não foi possível atualizar as causas.'
+      });
+    }
+  }
+
+  async removePostCause(req, res) {
+    try {
+      const { postId, causeId } = req.params;
+
+      const post = await PostRepository.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          error: 'Publicação não encontrada.'
+        });
+      }
+
+      if (post.ongId !== req.user.id) {
+        return res.status(403).json({
+          error: 'Você não tem permissão para modificar esta publicação.'
+        });
+      }
+
+      const result = await causeRepository.removePostCause(
+        postId,
+        causeId
+      );
+
+      return res.status(200).json({
+        message: 'Causa removida da publicação com sucesso.',
+        causes: result.causes
+      });
+    } catch (error) {
+      console.error('Erro ao remover causa da publicação:', error);
+
+      return res.status(400).json({
+        error: 'Não foi possível remover a causa.'
+      });
     }
   }
 }

@@ -10,6 +10,13 @@ import {
   updatePostSchema
 } from '../schemas/postSchemas.js';
 import requireApprovedOng from '../middlewares/requireApprovedOngMiddleware.js';
+import causeController from '../controllers/CauseController.js';
+
+import {
+  causesSchema,
+  postCauseParamsSchema,
+  postCauseDeleteParamsSchema
+} from '../schemas/causeSchemas.js';
 
 const router = Router();
 
@@ -54,6 +61,47 @@ router.delete(
   ...ongAuthorization,
   validate(idParamSchema, 'params'),
   postController.delete
+);
+
+router.get(
+  '/matches/me',
+  authMiddleware,
+  postController.getMatchedPosts
+);
+
+router.get(
+  '/:postId/causes',
+  validate(postCauseParamsSchema, 'params'),
+  causeController.getPostCauses
+);
+
+router.post(
+  '/:postId/causes',
+  authMiddleware,
+  authorizeRoles('O'),
+  requireApprovedOng,
+  validate(postCauseParamsSchema, 'params'),
+  validate(causesSchema),
+  causeController.addPostCauses
+);
+
+router.put(
+  '/:postId/causes',
+  authMiddleware,
+  authorizeRoles('O'),
+  requireApprovedOng,
+  validate(postCauseParamsSchema, 'params'),
+  validate(causesSchema),
+  causeController.setPostCauses
+);
+
+router.delete(
+  '/:postId/causes/:causeId',
+  authMiddleware,
+  authorizeRoles('O'),
+  requireApprovedOng,
+  validate(postCauseDeleteParamsSchema, 'params'),
+  causeController.removePostCause
 );
 
 export default router;

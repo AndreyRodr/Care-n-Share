@@ -31,3 +31,29 @@ export const updateCauseSchema = z
     (data) => Object.values(data).some((value) => value !== undefined),
     { message: 'Envie ao menos um campo para atualizar.' }
   );
+
+export const causeIdParamSchema = z.object({
+  causeId: z.string().uuid('ID da causa inválido.')
+});
+
+export const postCauseParamsSchema = z.object({
+  postId: z.string().uuid('ID da publicação inválido.')
+});
+
+export const postCauseDeleteParamsSchema = z.object({
+  postId: z.string().uuid('ID da publicação inválido.'),
+  causeId: z.string().uuid('ID da causa inválido.')
+});
+
+export const causesSchema = z.object({
+  causeIds: z
+    .array(
+      z.string().uuid('Um dos IDs de causa é inválido.')
+    )
+    .min(1, 'Informe pelo menos uma causa.')
+    .max(50, 'Você pode selecionar no máximo 50 causas.')
+}).strict();
+
+export const singleCauseSchema = z.object({
+  causeId: z.string().uuid('ID da causa inválido.')
+}).strict();

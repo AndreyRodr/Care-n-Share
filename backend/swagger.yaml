@@ -251,6 +251,200 @@ paths:
         '500':
           description: Erro ao buscar publicações da ONG.
 
+  /api/posts/{postId}/causes:
+    get:
+      summary: Listar causas associadas a um post
+      tags:
+        - Post Causes
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Causas do post retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  causes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "404":
+          description: Post não encontrado
+
+    post:
+      summary: Adicionar causas a um post
+      tags:
+        - Post Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas adicionadas ao post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  causes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+        "403":
+          description: Usuário sem permissão para editar este post
+        "404":
+          description: Post não encontrado
+
+    put:
+      summary: Substituir todas as causas de um post
+      description: Envie um array vazio para remover todas as causas associadas.
+      tags:
+        - Post Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas do post atualizadas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  causes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+        "403":
+          description: Usuário sem permissão para editar este post
+        "404":
+          description: Post não encontrado
+
+  /api/posts/{postId}/causes/{causeId}:
+    delete:
+      summary: Remover uma causa de um post
+      tags:
+        - Post Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID do post
+          schema:
+            type: string
+            format: uuid
+        - name: causeId
+          in: path
+          required: true
+          description: ID da causa
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Causa removida do post
+        "401":
+          description: Não autenticado
+        "403":
+          description: Usuário sem permissão para editar este post
+        "404":
+          description: Post ou causa não encontrado
+
+  /api/posts/matches/me:
+    get:
+      summary: Buscar posts recomendados para o usuário autenticado
+      description: |
+        Utiliza as causas de interesse do usuário para encontrar posts
+        relacionados. Os resultados são ordenados pela quantidade de
+        causas correspondentes, com os mais recentes como critério de desempate.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Posts recomendados encontrados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Posts recomendados encontrados com sucesso.
+                  totalInterests:
+                    type: integer
+                    example: 4
+                  posts:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: "#/components/schemas/Post"
+                        - type: object
+                          properties:
+                            matchScore:
+                              type: integer
+                              example: 3
+                              description: Quantidade de causas correspondentes.
+                            matchPercentage:
+                              type: integer
+                              example: 75
+                              description: Percentual dos interesses do usuário atendidos pelo post.
+                            matchedCauses:
+                              type: array
+                              items:
+                                $ref: "#/components/schemas/Cause"
+        "401":
+          description: Usuário não autenticado
+        "404":
+          description: Usuário não encontrado
+        "500":
+          description: Erro interno do servidor
+
   # ==========================================
   # DASHBOARD DA ONG
   # ==========================================
@@ -1011,6 +1205,112 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /api/users/causes:
+    get:
+      summary: Listar causas de interesse do usuário autenticado
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Causas de interesse retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interestedCauses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "401":
+          description: Não autenticado
+        "404":
+          description: Usuário não encontrado
+
+    post:
+      summary: Adicionar causas aos interesses do usuário
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas adicionadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interestedCauses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+
+    put:
+      summary: Substituir todas as causas de interesse do usuário
+      description: Envie um array vazio para remover todas as causas de interesse.
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CauseIdsInput"
+      responses:
+        "200":
+          description: Causas atualizadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interestedCauses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cause"
+        "400":
+          description: Dados inválidos
+        "401":
+          description: Não autenticado
+
+  /api/users/causes/{causeId}:
+    delete:
+      summary: Remover uma causa dos interesses do usuário
+      tags:
+        - User Causes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: causeId
+          in: path
+          required: true
+          description: ID da causa
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Causa removida dos interesses
+        "401":
+          description: Não autenticado
+        "404":
+          description: Usuário ou causa não encontrado
+
   # ==========================================
   # CAUSES
   # ==========================================
@@ -1401,6 +1701,21 @@ components:
             posts:
               type: integer
               example: 3
+
+    CauseIdsInput:
+      type: object
+      properties:
+        causeIds:
+          type: array
+          description: IDs das causas que serão associadas.
+          items:
+            type: string
+            format: uuid
+          example:
+            - "550e8400-e29b-41d4-a716-446655440000"
+            - "650e8400-e29b-41d4-a716-446655440000"
+      required:
+        - causeIds
 
     CauseDetail:
       allOf:

@@ -209,6 +209,30 @@ class PostController {
       });
     }
   }
+
+  async getMatchedPosts(req, res) {
+    try {
+      const userId = req.user.id;
+      const result = await postRepository.findMatchedPosts(userId);
+
+      if (!result) {
+        return res.status(404).json({
+          message: 'Usuário não encontrado.'
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Posts recomendados encontrados com sucesso.',
+        ...result
+      });
+    } catch (error) {
+      console.error('Erro ao buscar posts recomendados:', error);
+
+      return res.status(500).json({
+        message: 'Erro interno ao buscar posts recomendados.'
+      });
+    }
+  }
 }
 
 export default new PostController();
