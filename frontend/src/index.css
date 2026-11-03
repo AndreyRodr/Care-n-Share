@@ -1030,6 +1030,126 @@ h1, h2, h3, h4,
   white-space: pre-wrap;
   margin: 0;
 }
+
+.post-card-fundraising {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f5f8f7;
+}
+
+.post-card-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-card-progress-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.post-card-progress-label {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.post-card-progress-header strong {
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.post-card-progress-percentage {
+  color: var(--cozy-accent, #0E7C66);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.post-card-progress-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce7e3;
+}
+
+.post-card-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--cozy-accent, #0E7C66);
+  transition: width 0.3s ease;
+}
+
+.post-card-progress-caption {
+  display: block;
+  margin-top: 0.6rem;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.post-card-deadline {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  color: #64748b;
+}
+
+.post-card-deadline > svg {
+  flex-shrink: 0;
+  color: var(--cozy-accent, #0E7C66);
+}
+
+.post-card-deadline > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.post-card-deadline strong {
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.post-card-deadline span {
+  font-size: 0.8rem;
+}
+
+.post-card-donate-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--cozy-accent, #0E7C66);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.post-card-donate-button:hover:not(:disabled) {
+  filter: brightness(0.93);
+  transform: translateY(-1px);
+}
+
+.post-card-donate-button:focus-visible {
+  outline: 3px solid rgba(14, 124, 102, 0.3);
+  outline-offset: 3px;
+}
+
+.post-card-donate-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .post-card--compact .post-card-body { padding: 1.25rem; }
 .post-card--compact .post-card-title { font-size: 1.1rem; }
 .post-card--compact .post-card-media { aspect-ratio: 16 / 9; }
