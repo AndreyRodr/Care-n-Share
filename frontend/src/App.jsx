@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import DonationManage from './pages/DonationManage.jsx';
 import InventoryManage from './pages/InventoryManage.jsx';
 import OngProfile from './pages/OngProfile.jsx';
+import ManagePosts from './pages/ManagePosts.jsx';
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
 import AdminOngVerifications from './pages/AdminOngVerifications.jsx';
 
@@ -100,6 +101,14 @@ function AppContent() {
           element={
             <PrivateRoute>
               <OngProfile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/posts/manage"
+          element={
+            <PrivateRoute>
+              <ManagePosts />
             </PrivateRoute>
           }
         />

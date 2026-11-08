@@ -1033,6 +1033,56 @@ h1, h2, h3, h4,
 .post-card--compact .post-card-body { padding: 1.25rem; }
 .post-card--compact .post-card-title { font-size: 1.1rem; }
 .post-card--compact .post-card-media { aspect-ratio: 16 / 9; }
+.post-card-goal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--cozy-bg);
+}
+.post-card-goal span {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cozy-accent);
+}
+.post-progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  margin-top: 0.75rem;
+  background-color: var(--cozy-bg);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.post-progress-bar-fill {
+  height: 100%;
+  background-color: var(--cozy-accent);
+  border-radius: 9999px;
+  transition: width 0.3s;
+}
+.btn-checkin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: var(--cozy-accent);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-checkin:hover {
+  transform: translateY(-2px);
+}
 
 /* =========================================
    Botões ghost (substituem onMouseOver/onMouseOut inline)
@@ -1046,6 +1096,273 @@ h1, h2, h3, h4,
 }
 .btn-icon-ghost:hover {
   color: var(--cozy-text);
+}
+
+/* =========================================
+   Criação e gerenciamento de posts
+========================================= */
+.form-error-text {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+.btn-new-post {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--cozy-accent);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(var(--rgb-accent), 0.25);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.btn-new-post:hover {
+  transform: translateY(-2px);
+}
+.btn-manage-posts {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--cozy-card);
+  color: rgba(var(--rgb-text), 0.6);
+  border: 1px solid rgba(var(--rgb-accent), 0.1);
+  border-radius: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.btn-manage-posts:hover {
+  color: var(--cozy-accent);
+}
+.post-type-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.25rem;
+  background-color: var(--cozy-bg);
+  border: 2px solid transparent;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+.post-type-option:hover {
+  border-color: rgba(var(--rgb-accent), 0.3);
+}
+.post-type-option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  border-radius: 1rem;
+  background-color: rgba(var(--rgb-accent), 0.1);
+  color: var(--cozy-accent);
+}
+.post-type-option-icon--accent {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+.post-type-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.post-type-option-text strong {
+  font-size: 1rem;
+  color: var(--cozy-text);
+}
+.post-type-option-text small {
+  font-size: 0.8rem;
+  color: rgba(var(--rgb-text), 0.5);
+  font-weight: 400;
+}
+.manage-post-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
+}
+@media (min-width: 768px) { .manage-post-grid { grid-template-columns: repeat(2, 1fr); } }
+.manage-post-card {
+  background-color: var(--cozy-card);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(var(--rgb-accent), 0.06);
+  display: flex;
+  flex-direction: column;
+}
+.manage-post-image {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.manage-post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.manage-post-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.manage-post-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.manage-post-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.manage-post-content {
+  color: rgba(var(--rgb-text), 0.7);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.manage-post-goal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.75rem 0 0;
+}
+.manage-post-goal span {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cozy-accent);
+}
+.manage-post-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--cozy-bg);
+}
+.manage-post-actions .btn-icon-ghost {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.btn-icon-ghost--danger:hover {
+  color: #dc2626;
+}
+
+/* =========================================
+   Busca de ONGs (aba Descobrir)
+========================================= */
+.ong-search-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.ong-search-input {
+  position: relative;
+  flex: 1;
+  min-width: 16rem;
+}
+.ong-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(var(--rgb-accent), 0.4);
+}
+.ong-search-input input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 1rem 0 2.75rem;
+  border: 1px solid rgba(var(--rgb-accent), 0.2);
+  border-radius: 0.75rem;
+  background-color: var(--cozy-card);
+  color: var(--cozy-text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+.ong-search-input input:focus {
+  border-color: var(--cozy-accent);
+}
+.ong-search-filters select {
+  height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(var(--rgb-accent), 0.2);
+  border-radius: 0.75rem;
+  background-color: var(--cozy-card);
+  color: var(--cozy-text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+/* =========================================
+   Minhas Doações (check-ins do doador)
+========================================= */
+.my-donation-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--cozy-bg);
+  border-radius: 1.25rem;
+}
+.my-donation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background-color: rgba(var(--rgb-accent), 0.15);
+  color: var(--cozy-accent);
+}
+.my-donation-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.125rem;
+}
+.my-donation-info span {
+  font-size: 0.8rem;
+  color: rgba(var(--rgb-text), 0.6);
+}
+.donation-status-pill {
+  display: inline-block;
+  width: fit-content;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  background-color: #fef3c7;
+  color: #b45309;
 }
 .btn-text-ghost {
   width: 100%;
