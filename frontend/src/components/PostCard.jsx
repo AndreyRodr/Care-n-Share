@@ -1,21 +1,19 @@
 import { Clock3, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import ContributionModal from './ContributionModal';
 
 // Card único usado no Feed e no mural da ONG, pra garantir o mesmo visual nos dois lugares.
 const PostCard = ({ post, ongName, ongAvatar, compact = false }) => {
   const [isArrecadation, setIsArrecadation] = useState(false);
   const [progressPercentage, setProgressPercentage] = useState(0);
+  const [campaignClosed, setCampaignClosed] = useState(true)
+  const [isArrecadationModalOpened, setIsArrecadationModalOpened] = useState(false)
 
-  function formatDeadline(deadline) {
-    if (!deadline) return 'Prazo não definido';
-
-    const deadlineDate = new Date(deadline);
-
-    if (Number.isNaN(deadlineDate.getTime())) {
-      return 'Data inválida';
-    }
+  function diffInDays(deadline) {
+    if(!deadline) return 0
 
     const now = new Date();
+    const deadlineDate = new Date(deadline);
 
     const today = new Date(
       now.getFullYear(),
@@ -29,23 +27,30 @@ const PostCard = ({ post, ongName, ongAvatar, compact = false }) => {
       deadlineDate.getDate()
     );
 
-    const diffInDays = Math.round(
+    return Math.round(
       (deadlineDay - today) / (1000 * 60 * 60 * 24)
     );
 
-    if (diffInDays < 0) {
+  }
+
+  function formatDeadline(deadline) {
+    if (!deadline) return 'Prazo não definido';
+
+    const diff = diffInDays(deadline)
+
+    if (diff < 0) {
       return 'Campanha encerrada';
     }
 
-    if (diffInDays === 0) {
+    if (diff === 0) {
       return 'Encerra hoje';
     }
 
-    if (diffInDays === 1) {
+    if (diff === 1) {
       return 'Encerra amanhã';
     }
 
-    return `Encerra em ${diffInDays} dias`;
+    return `Encerra em ${diff} dias`;
   }
 
   function formatDeadlineDate(deadline) {
@@ -70,8 +75,13 @@ const PostCard = ({ post, ongName, ongAvatar, compact = false }) => {
       Math.round((post.amountRaised / post.fundraisingGoal) * 100)
     ) : 0;
 
+    if(diffInDays(post.fundraisingDeadline) >= 0) {
+      setCampaignClosed(false)
+    } else {
+      setCampaignClosed(true)
+    }
+
     if (post.fundraisingGoal > 0) {
-      console.log(post);
 
       setIsArrecadation(true);
 
@@ -162,18 +172,26 @@ const PostCard = ({ post, ongName, ongAvatar, compact = false }) => {
             <button
               type="button"
               className="post-card-donate-button"
-              onClick={() => { console.log('a') }}
-            // disabled={campaignClosed}
+              onClick={() => {setIsArrecadationModalOpened(true)
+              }}
+              disabled={campaignClosed}
             >
               <Heart size={18} aria-hidden="true" />
 
-              {/* {campaignClosed
+              {campaignClosed
                 ? 'Campanha encerrada'
-                : 'Quero contribuir'} */}
+                : 'Quero contribuir'}
             </button>
           </div>
         }
       </div>
+
+        {isArrecadationModalOpened && (<ContributionModal 
+          post={post}
+          onClose={() => setIsArrecadationModalOpened(false)}
+          onConfirm={() => {}}
+          // loading={}
+        />)}
     </article>
   );
 }

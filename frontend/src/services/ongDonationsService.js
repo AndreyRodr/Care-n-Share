@@ -19,6 +19,20 @@ export async function getOngDonations(filters = {}) {
   return response.data;
 }
 
+export async function postDonate(post, quantity, donorId) {
+  const response = await api.post('/api/ong/donations', {
+    itemName: post.title,
+    category: post.category ?? 'Financeiro',
+    quantity: Number(quantity),
+    unit: post.unit ?? 'BRL',
+    type: 'PIX',
+    donorId,
+    postId: post.id,
+  });
+
+  return response.data;
+}
+
 export async function completeDonation(id) {
   const response = await api.patch(`/api/ong/donations/${id}/complete`);
   return response.data;

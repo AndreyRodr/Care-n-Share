@@ -1,4 +1,3 @@
-import { log } from "node:console";
 import prisma from "../config/database.js";
 
 class DonationRepository {
