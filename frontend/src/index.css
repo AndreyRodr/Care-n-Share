@@ -1030,6 +1030,126 @@ h1, h2, h3, h4,
   white-space: pre-wrap;
   margin: 0;
 }
+
+.post-card-fundraising {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f5f8f7;
+}
+
+.post-card-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-card-progress-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.post-card-progress-label {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.post-card-progress-header strong {
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.post-card-progress-percentage {
+  color: var(--cozy-accent, #0E7C66);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.post-card-progress-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce7e3;
+}
+
+.post-card-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--cozy-accent, #0E7C66);
+  transition: width 0.3s ease;
+}
+
+.post-card-progress-caption {
+  display: block;
+  margin-top: 0.6rem;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.post-card-deadline {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  color: #64748b;
+}
+
+.post-card-deadline > svg {
+  flex-shrink: 0;
+  color: var(--cozy-accent, #0E7C66);
+}
+
+.post-card-deadline > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.post-card-deadline strong {
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.post-card-deadline span {
+  font-size: 0.8rem;
+}
+
+.post-card-donate-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--cozy-accent, #0E7C66);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.post-card-donate-button:hover:not(:disabled) {
+  filter: brightness(0.93);
+  transform: translateY(-1px);
+}
+
+.post-card-donate-button:focus-visible {
+  outline: 3px solid rgba(14, 124, 102, 0.3);
+  outline-offset: 3px;
+}
+
+.post-card-donate-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .post-card--compact .post-card-body { padding: 1.25rem; }
 .post-card--compact .post-card-title { font-size: 1.1rem; }
 .post-card--compact .post-card-media { aspect-ratio: 16 / 9; }
@@ -3250,4 +3370,418 @@ h1, h2, h3, h4,
   height: 100%;
   border: 0;
   background: #525659;
+}
+
+/* ========================================
+   OVERLAY MODAL ARRECADAÇÃO
+======================================== */
+
+.contribution-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1.25rem;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+
+  animation: contributionFadeIn 0.2s ease;
+}
+
+/* ========================================
+   MODAL
+======================================== */
+
+.contribution-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+  border-radius: 20px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+
+  animation: contributionSlideUp 0.25s ease;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+.contribution-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 1.4rem 1.5rem;
+
+  border-bottom: 1px solid #edf0ef;
+}
+
+.contribution-modal-header > div {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  color: #0e7c66;
+}
+
+.contribution-modal-header h2 {
+  margin: 0;
+
+  color: #263b35;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.contribution-modal-header > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f3f6f5;
+  color: #64748b;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.contribution-modal-header > button:hover:not(:disabled) {
+  background: #e7efec;
+  color: #0e7c66;
+}
+
+.contribution-modal-header > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   CONTENT
+======================================== */
+
+.contribution-modal-content {
+  padding: 1.5rem;
+}
+
+.contribution-modal-description {
+  margin: 0 0 1.4rem;
+
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ========================================
+   CAMPAIGN INFORMATION
+======================================== */
+
+.contribution-campaign-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  padding: 1.1rem;
+
+  margin-bottom: 1.5rem;
+
+  background: #f3f8f6;
+  border: 1px solid #e0eee9;
+  border-radius: 12px;
+}
+
+.contribution-campaign-info > span {
+  color: #0e7c66;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.contribution-campaign-info > strong {
+  color: #263b35;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.contribution-campaign-info > div {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   FORM
+======================================== */
+
+.contribution-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.contribution-form-group label {
+  color: #334155;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ========================================
+   QUANTITY CONTROL
+======================================== */
+
+.contribution-quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 54px;
+
+  border: 1.5px solid #dce5e1;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contribution-quantity-control:focus-within {
+  border-color: #0e7c66;
+  box-shadow: 0 0 0 3px rgba(14, 124, 102, 0.1);
+}
+
+.contribution-quantity-control button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48px;
+  height: 100%;
+
+  border: none;
+  background: transparent;
+
+  color: #0e7c66;
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.contribution-quantity-control button:hover:not(:disabled) {
+  background: #f0f7f4;
+}
+
+.contribution-quantity-control button:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.contribution-quantity-control input {
+  width: 100%;
+  min-width: 0;
+
+  padding: 0.5rem;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #263b35;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Remove setas padrão do input number */
+
+.contribution-quantity-control input::-webkit-inner-spin-button,
+.contribution-quantity-control input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.contribution-quantity-control input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* ========================================
+   UNIT
+======================================== */
+
+.contribution-unit {
+  display: block;
+
+  margin-top: 0.65rem;
+
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+/* ========================================
+   ERROR
+======================================== */
+
+.contribution-error {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.9rem;
+
+  border-radius: 8px;
+
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.contribution-submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 48px;
+
+  margin-top: 1.5rem;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #0e7c66;
+  color: #ffffff;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.contribution-submit-button:hover:not(:disabled) {
+  background: #096653;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(14, 124, 102, 0.2);
+}
+
+.contribution-submit-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.contribution-cancel-button {
+  width: 100%;
+  min-height: 44px;
+
+  margin-top: 0.65rem;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #64748b;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.contribution-cancel-button:hover:not(:disabled) {
+  background: #f3f6f5;
+  color: #334155;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+
+@keyframes contributionFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes contributionSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 480px) {
+  .contribution-modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .contribution-modal {
+    max-height: 92vh;
+    border-radius: 16px;
+  }
+
+  .contribution-modal-header {
+    padding: 1.1rem;
+  }
+
+  .contribution-modal-header h2 {
+    font-size: 1.05rem;
+  }
+
+  .contribution-modal-content {
+    padding: 1.1rem;
+  }
+}
+
+/* Respeita usuários que preferem menos animações */
+
+@media (prefers-reduced-motion: reduce) {
+  .contribution-modal-overlay,
+  .contribution-modal {
+    animation: none;
+  }
+
+  .contribution-modal *,
+  .contribution-modal *::before,
+  .contribution-modal *::after {
+    transition-duration: 0.01ms !important;
+  }
 }

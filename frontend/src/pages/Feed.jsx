@@ -4,8 +4,6 @@ import { Sparkles, Heart, Users, HeartOff, PlusCircle, Compass, LayoutList } fro
 import Navbar from '../components/Navbar.jsx';
 import PostForm from '../components/PostForm.jsx';
 import PostCard from '../components/PostCard.jsx';
-import OngModal from '../components/OngModal.jsx';
-import PixModal from '../components/PixModal.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
 import { toast } from '../utils/toast.js';

@@ -1,29 +1,50 @@
-import { log } from 'node:console';
 import donationRepository from '../repositories/DonationRepository.js';
+import postRepository from "../repositories/PostRepository.js"
 
 class DonationController {
   async create(req, res) {
-    try {
-      const { itemName, category, quantity, type, unit, donorId, postId } = req.body;
-      const ongId = req.user.id;
+  try {
+    const {
+      itemName,
+      category,
+      quantity,
+      type,
+      unit,
+      postId
+    } = req.body;
 
-      const donation = await donationRepository.create({
-        itemName,
-        category,
-        quantity,
-        type,
-        unit,
-        donorId,
-        ongId,
-        postId
+    const donorId = req.user.id;
+
+    const post = await postRepository.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        error: 'Campanha não encontrada.'
       });
-
-      return res.status(201).json(donation);
-    } catch (error) {
-      console.error('Erro ao criar doação:', error);
-      return res.status(400).json({ error: 'Erro ao registrar doação.' });
     }
+
+    const ongId = post.ongId;
+
+    const donation = await donationRepository.create({
+      itemName,
+      category,
+      quantity,
+      type,
+      unit,
+      donorId,
+      ongId,
+      postId
+    });
+
+    return res.status(201).json(donation);
+  } catch (error) {
+    console.error('Erro ao criar doação:', error);
+
+    return res.status(400).json({
+      error: 'Erro ao registrar doação.'
+    });
   }
+}
 
   async getAll(req, res) {
     try {
