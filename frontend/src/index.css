@@ -3785,3 +3785,112 @@ h1, h2, h3, h4,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =========================================
+   Donation confirm modal
+========================================= */
+.donation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background-color: rgba(var(--rgb-text), 0.6);
+  backdrop-filter: blur(4px);
+  animation: contributionFadeIn 0.2s ease;
+}
+
+.donation-modal {
+  width: 100%;
+  max-width: 26rem;
+  padding: 2rem;
+  background-color: var(--cozy-card);
+  border: 1px solid rgba(var(--rgb-accent), 0.1);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: contributionSlideUp 0.25s ease;
+}
+
+.donation-modal .donation-modal-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto 1.25rem;
+  background-color: var(--cozy-pastel-green);
+  color: var(--cozy-accent);
+  font-size: 1.5rem;
+}
+
+.donation-modal h2 {
+  margin: 0 0 0.75rem;
+  color: var(--cozy-accent-dark);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.donation-modal p {
+  margin: 0 0 0.65rem;
+  color: rgba(var(--rgb-text), 0.7);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.donation-modal p:last-of-type {
+  margin-bottom: 1.75rem;
+  color: rgba(var(--rgb-text), 0.55);
+  font-size: 0.85rem;
+}
+
+.donation-modal strong {
+  color: var(--cozy-text);
+  font-weight: 600;
+}
+
+.donation-modal .donation-action {
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.donation-modal .donation-button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.donation-button-secondary {
+  background-color: var(--cozy-bg);
+  color: var(--cozy-text);
+  border: 1px solid rgba(var(--rgb-accent), 0.15);
+}
+
+.donation-button-secondary:hover {
+  background-color: rgba(var(--rgb-accent), 0.08);
+}
+
+.donation-button-primary {
+  background-color: var(--cozy-accent);
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(var(--rgb-accent), 0.2);
+}
+
+.donation-button-primary:hover {
+  background-color: var(--cozy-accent-dark);
+}
+
+@media (max-width: 480px) {
+  .donation-modal {
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+  }
+
+  .donation-modal .donation-action {
+    flex-direction: column-reverse;
+  }
+
+  .donation-modal .donation-button {
+    width: 100%;
+  }
+}
