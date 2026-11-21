@@ -100,33 +100,34 @@ A proposta é criar um ambiente em que doadores possam encontrar organizações 
 
 O projeto utiliza uma arquitetura dividida entre frontend e backend, com comunicação por meio de uma API REST.
 
-\`\`\`text
+```text
 ┌──────────────────────────────┐
-│          Frontend           │
-│       React + Vite          │
+│           Frontend           │
+│         React + Vite         │
 │                              │
 │  Páginas, componentes,       │
 │  formulários e dashboards    │
 └──────────────┬───────────────┘
-│ HTTP / REST
-▼
-┌──────────────────────────────┐
-│           Backend           │
-│        Node.js + Express    │
+               │
+           HTTP / REST
+               │
+┌──────────────▼───────────────┐
+│            Backend           │
+│        Node.js + Express     │
 │                              │
-│  Routes → Controllers       │
-│         → Services          │
-│         → Repositories      │
+│  Routes → Controllers        │
+│         → Services           │
+│         → Repositories       │
 └──────────────┬───────────────┘
-│
-┌───────┴────────┐
-▼                ▼
+               │
+       ┌───────┴────────┐
+       ▼                ▼
 ┌──────────────┐ ┌──────────────┐
-│ PostgreSQL  │ │ Cloudinary   │
-│ Prisma ORM  │ │ Arquivos e   │
-│             │ │ imagens      │
+│  PostgreSQL  │ │  Cloudinary  │
+│  Prisma ORM  │ │  Arquivos e  │
+│              │ │  imagens     │
 └──────────────┘ └──────────────┘
-\`\`\`
+```
 
 ### Organização do backend
 
@@ -144,7 +145,7 @@ O backend segue uma organização modular, separando responsabilidades entre:
 
 ## 📂 Estrutura do projeto
 
-\`\`\`text
+```text
 Care-n-Share/
 │
 ├── backend/
@@ -179,7 +180,7 @@ Care-n-Share/
 │   └── package.json
 │
 └── README.md
-\`\`\`
+```
 
 ---
 
@@ -197,10 +198,10 @@ Antes de iniciar, é necessário ter instalado:
 
 ### 1. Clonar o repositório
 
-\`\`\`bash
-git clone [https://github.com/AndreyRodr/Care-n-Share.git](https://github.com/AndreyRodr/Care-n-Share.git)
+```bash
+git clone https://github.com/AndreyRodr/Care-n-Share.git
 cd Care-n-Share
-\`\`\`
+```
 
 ### 2. Configurar o banco de dados
 
@@ -208,33 +209,33 @@ Crie um banco de dados PostgreSQL para o projeto.
 
 Exemplo utilizando o PostgreSQL:
 
-\`\`\`sql
+```sql
 CREATE DATABASE care_n_share;
-\`\`\`
+```
 
 ### 3. Configurar o backend
 
 Acesse a pasta do backend:
 
-\`\`\`bash
+```bash
 cd backend
 npm install
-\`\`\`
+```
 
 Crie um arquivo `.env` dentro da pasta `backend`:
 
-\`\`\`env
+```env
 PORT=3001
-FRONTEND_URL=[http://localhost:5173](http://localhost:5173)
+FRONTEND_URL=http://localhost:5173
 
-DATABASE_URL="postgresql://USUARIO\:SENHA\@localhost:5432/care_n_share?schema=public"
+DATABASE_URL="postgresql://USUARIO:SENHA@localhost:5432/care_n_share?schema=public"
 
 JWT_SECRET="uma_chave_secreta_forte"
 
 CLOUDINARY_CLOUD_NAME="seu_cloud_name"
 CLOUDINARY_API_KEY="sua_api_key"
 CLOUDINARY_API_SECRET="seu_api_secret"
-\`\`\`
+```
 
 Substitua os valores pelas configurações do seu ambiente.
 
@@ -242,51 +243,51 @@ Substitua os valores pelas configurações do seu ambiente.
 
 Ainda dentro da pasta `backend`, execute:
 
-\`\`\`bash
+```bash
 npx prisma generate
 npx prisma migrate dev
-\`\`\`
+```
 
 Esses comandos geram o Prisma Client e aplicam as migrações necessárias ao banco de dados.
 
 ### 5. Iniciar o backend
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 A API estará disponível em:
 
-\`\`\`text
-[http://localhost:3001](http://localhost:3001)
-\`\`\`
+```text
+http://localhost:3001
+```
 
 A documentação Swagger poderá ser acessada em:
 
-\`\`\`text
-[http://localhost:3001/api-docs](http://localhost:3001/api-docs)
-\`\`\`
+```text
+http://localhost:3001/api-docs
+```
 
 ### 6. Configurar o frontend
 
 Em outro terminal, retorne à raiz do projeto e acesse a pasta do frontend:
 
-\`\`\`bash
+```bash
 cd frontend
 npm install
-\`\`\`
+```
 
 ### 7. Iniciar o frontend
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 A aplicação estará disponível em:
 
-\`\`\`text
-[http://localhost:5173](http://localhost:5173)
-\`\`\`
+```text
+http://localhost:5173
+```
 
 O Vite está configurado para encaminhar as requisições que começam com `/api` para o backend local.
 
