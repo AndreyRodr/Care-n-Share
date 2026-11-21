@@ -15,7 +15,7 @@ import requireApprovedOng from '../middlewares/requireApprovedOngMiddleware.js';
 
 const router = Router();
 
-router.use(authMiddleware, authorizeRoles('O'));
+router.use(authMiddleware);
 
 // --- Dashboard ---
 router.get('/dashboard/summary', ongDashboardController.getSummary);
@@ -27,7 +27,7 @@ router.get('/dashboard/activity', ongDashboardController.getActivity);
 // --- Doações ---
 router.post(
   '/donations',
-  requireApprovedOng,
+  authMiddleware,
   validate(createDonationSchema),
   donationController.create
 );
