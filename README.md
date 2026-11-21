@@ -375,8 +375,8 @@ Projeto desenvolvido colaborativamente por:
   <tr>
     <td align="center">
       <a href="https://github.com/AndreyRod">
-        <img src="https://github.com/AndreyRod.png" width="100px;" alt="AndreyRod"/><br />
-        <sub><b>AndreyRod</b></sub>
+        <img src="https://github.com/AndreyRodr.png" width="100px;" alt="AndreyRod"/><br />
+        <sub><b>AndreyRodr</b></sub>
       </a>
     </td>
     <td align="center">
