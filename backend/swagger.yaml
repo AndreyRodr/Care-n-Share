@@ -30,6 +30,9 @@ paths:
                   title: "Ajude a construir nossa sede"
                   content: "Precisamos arrecadar recursos."
                   image: "https://cloudinary.com/image.jpg"
+                  category: "Alimentícia"
+                  unit: "R$"
+                  type: "Doação"
                   fundraisingGoal: "15000.00"
                   amountRaised: "8500.00"
                   fundraisingDeadline: "2026-12-31T23:59:59.000Z"
@@ -64,6 +67,15 @@ paths:
                 content:
                   type: string
                   example: "Precisamos arrecadar recursos."
+                category:
+                  type: string
+                  example: "Alimentícia"
+                unit:
+                  type: string
+                  example: "R$"
+                type:
+                  type: string
+                  example: "Doação"
                 fundraisingGoal:
                   type: number
                   minimum: 0
@@ -86,6 +98,9 @@ paths:
                 post:
                   id: "uuid-post-1"
                   title: "Ajude a construir nossa sede"
+                  category: "Alimentícia"
+                  unit: "R$"
+                  type: "Doação"
                   fundraisingGoal: "15000.00"
                   amountRaised: "0.00"
         '400':
@@ -119,6 +134,9 @@ paths:
                 id: "uuid-post-1"
                 title: "Ajude a construir nossa sede"
                 content: "Precisamos arrecadar recursos."
+                category: "Alimentícia"
+                unit: "R$"
+                type: "Doação"
                 fundraisingGoal: "15000.00"
                 amountRaised: "8500.00"
                 fundraisingDeadline: "2026-12-31T23:59:59.000Z"
@@ -154,6 +172,15 @@ paths:
                 content:
                   type: string
                   example: "Atualização sobre nossa campanha."
+                category:
+                  type: string
+                  example: "Alimentícia"
+                unit:
+                  type: string
+                  example: "R$"
+                type:
+                  type: string
+                  example: "Doação"
                 fundraisingGoal:
                   type: number
                   minimum: 0
@@ -179,6 +206,9 @@ paths:
                 post:
                   id: "uuid-post-1"
                   title: "Nova meta para construção da sede"
+                  category: "Alimentícia"
+                  unit: "R$"
+                  type: "Doação"
                   fundraisingGoal: "20000.00"
         '400':
           description: Dados inválidos.
@@ -243,6 +273,9 @@ paths:
                 - id: "uuid-post-1"
                   title: "Campanha de arrecadação"
                   content: "Ajude nossa ONG."
+                  category: "Alimentícia"
+                  unit: "R$"
+                  type: "Doação"
                   fundraisingGoal: "10000.00"
                   amountRaised: "5000.00"
                   fundraisingDeadline: "2026-12-31T23:59:59.000Z"
@@ -1467,6 +1500,15 @@ components:
         image:
           type: string
           nullable: true
+        category:
+          type: string
+          example: "Alimentícia"
+        unit:
+          type: string
+          example: "R$"
+        type:
+          type: string
+          example: "Doação"
         fundraisingGoal:
           type: number
           format: double
@@ -1502,6 +1544,15 @@ components:
           type: string
           minLength: 1
           maxLength: 5000
+        category:
+          type: string
+          example: "Alimentícia"
+        unit:
+          type: string
+          example: "R$"
+        type:
+          type: string
+          example: "Doação"
         fundraisingGoal:
           type: number
           minimum: 0
@@ -1525,6 +1576,15 @@ components:
           type: string
           minLength: 1
           maxLength: 5000
+        category:
+          type: string
+          example: "Alimentícia"
+        unit:
+          type: string
+          example: "R$"
+        type:
+          type: string
+          example: "Doação"
         fundraisingGoal:
           type: number
           minimum: 0
@@ -1571,24 +1631,16 @@ components:
       type: object
       required:
         - itemName
-        - category
         - quantity
-        - unit
         - type
         - donorId
       properties:
         itemName:
           type: string
           example: "Arroz Integral"
-        category:
-          type: string
-          example: "Alimentos"
         quantity:
           type: number
           example: 15
-        unit:
-          type: string
-          example: "KG"
         type:
           type: string
           enum: [CREDIT, DEBIT, MONEY, PIX]

@@ -5,6 +5,24 @@ const fundraisingGoalSchema = z.coerce
   .min(0, 'A meta de arrecadação não pode ser negativa.')
   .default(0);
 
+const categorySchema = z
+  .string()
+  .trim()
+  .min(2, 'A categoria deve ter pelo menos 2 caracteres.')
+  .max(80, 'A categoria deve ter no máximo 80 caracteres.');
+
+const unitSchema = z
+  .string()
+  .trim()
+  .min(1, 'A unidade é obrigatória.')
+  .max(30, 'A unidade deve ter no máximo 30 caracteres.');
+
+const typeSchema = z
+  .string()
+  .trim()
+  .min(1, 'O tipo é obrigatória.')
+  .max(30, 'O tipo deve ter no máximo 30 caracteres.');
+
 const fundraisingDeadlineSchema = z.preprocess(
   (value) => {
     if (value === '' || value === undefined || value === null) {
@@ -30,6 +48,9 @@ const postFields = {
     .max(5000, 'O conteúdo deve ter no máximo 5000 caracteres.'),
 
   fundraisingGoal: fundraisingGoalSchema,
+  category: categorySchema,
+  unit: unitSchema,
+  type: typeSchema,
 
   fundraisingDeadline: fundraisingDeadlineSchema
 };
@@ -61,6 +82,9 @@ export const updatePostSchema = z
   .object({
     title: postFields.title.optional(),
     content: postFields.content.optional(),
+    category: postFields.category.optional(),
+    unit: postFields.unit.optional(),
+    type: postFields.type.optional(),
     fundraisingGoal: z.coerce
       .number()
       .min(0, 'A meta de arrecadação não pode ser negativa.')

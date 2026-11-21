@@ -22,18 +22,6 @@ const itemNameSchema = z
   .min(2, 'O nome do item deve ter pelo menos 2 caracteres.')
   .max(120, 'O nome do item deve ter no máximo 120 caracteres.');
 
-const categorySchema = z
-  .string()
-  .trim()
-  .min(2, 'A categoria deve ter pelo menos 2 caracteres.')
-  .max(80, 'A categoria deve ter no máximo 80 caracteres.');
-
-const unitSchema = z
-  .string()
-  .trim()
-  .min(1, 'A unidade é obrigatória.')
-  .max(30, 'A unidade deve ter no máximo 30 caracteres.');
-
 const donationTypeSchema = z.enum(['CREDIT', 'DEBIT', 'MONEY', 'PIX'], {
   error: 'O tipo da doação é inválido.'
 });
@@ -41,10 +29,8 @@ const donationTypeSchema = z.enum(['CREDIT', 'DEBIT', 'MONEY', 'PIX'], {
 export const createDonationSchema = z
   .object({
     itemName: itemNameSchema,
-    category: categorySchema,
     quantity: donationQuantitySchema,
     type: donationTypeSchema,
-    unit: unitSchema,
     donorId: z.string().uuid('O identificador do doador é inválido.'),
     postId: z
       .string()
@@ -57,10 +43,8 @@ export const createDonationSchema = z
 export const updateDonationSchema = z
   .object({
     itemName: itemNameSchema.optional(),
-    category: categorySchema.optional(),
     quantity: donationQuantitySchema.optional(),
     type: donationTypeSchema.optional(),
-    unit: unitSchema.optional()
   })
   .strict()
   .refine(

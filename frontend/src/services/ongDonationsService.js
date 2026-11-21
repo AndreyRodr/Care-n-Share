@@ -22,9 +22,7 @@ export async function getOngDonations(filters = {}) {
 export async function postDonate(post, quantity, donorId) {
   const response = await api.post('/api/ong/donations', {
     itemName: post.title,
-    category: post.category ?? 'Financeiro',
     quantity: Number(quantity),
-    unit: post.unit ?? 'BRL',
     type: 'PIX',
     donorId,
     postId: post.id,
