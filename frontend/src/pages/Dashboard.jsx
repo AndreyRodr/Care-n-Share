@@ -139,9 +139,9 @@ const Dashboard = () => {
                     </ResponsiveContainer>
                 </div>
                 <div className="dashboard-chart">
-                    <h1>Metas concluídas</h1>
+                    {/* <h1>Metas concluídas</h1> */}
 
-                    <ResponsiveContainer width="90%" height={300}>
+                    {/* <ResponsiveContainer width="90%" height={300}>
                         <BarChart data={mockCompletedGoalsData}>
                             <CartesianGrid strokeDasharray="3 3" />
 
@@ -158,7 +158,7 @@ const Dashboard = () => {
                                 radius={[8, 8, 0, 0]}
                             />
                         </BarChart>
-                    </ResponsiveContainer>
+                    </ResponsiveContainer> */}
                 </div>
             </div>
         </div>

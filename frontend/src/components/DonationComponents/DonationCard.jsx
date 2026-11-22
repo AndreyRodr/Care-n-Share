@@ -58,7 +58,7 @@ export default function DonationCard({
                         Ver detalhes
                     </button>
 
-                    {donation.status === "PENDENTE" && (
+                    {donation.status === "PENDING" && (
                         <button
                             className="donation-button button-primary"
                             onClick={() => onConfirm(donation)}

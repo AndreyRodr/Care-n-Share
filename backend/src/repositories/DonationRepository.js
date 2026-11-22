@@ -1,4 +1,3 @@
-import { log } from "node:console";
 import prisma from "../config/database.js";
 
 class DonationRepository {
@@ -112,45 +111,56 @@ class DonationRepository {
   }
 
   async complete(id, ongId) {
-    const donation = await prisma.donationCheckin.findFirst({
-      where: { id, ongId },
+  const donation = await prisma.donationCheckin.findFirst({
+    where: { id, ongId },
+  });
+  if (!donation) throw new Error("NOT_FOUND");
+  if (donation.status !== "PENDING") throw new Error("NOT_PENDING");
+
+  return await prisma.$transaction(async (tx) => {
+    const updated = await tx.donationCheckin.update({
+      where: { id },
+      data: {
+        status: "CHECKED_IN",
+        checkedInAt: new Date(),
+        validatedById: ongId,
+      },
     });
-    if (!donation) throw new Error("NOT_FOUND");
-    if (donation.status !== "PENDING") throw new Error("NOT_PENDING");
 
-    return await prisma.$transaction(async (tx) => {
-      const updated = await tx.donationCheckin.update({
-        where: { id },
-        data: {
-          status: "CHECKED_IN",
-          checkedInAt: new Date(),
-          validatedById: ongId,
-        },
-      });
-
-      await tx.ongInventory.upsert({
-        where: {
-          ongId_itemName_unit: {
-            ongId: donation.ongId,
-            itemName: donation.itemName,
-            unit: donation.unit,
-          },
-        },
-        update: {
-          quantity: { increment: donation.quantity },
-        },
-        create: {
+    await tx.ongInventory.upsert({
+      where: {
+        ongId_itemName_unit: {
           ongId: donation.ongId,
           itemName: donation.itemName,
-          category: donation.category,
           unit: donation.unit,
-          quantity: donation.quantity,
+        },
+      },
+      update: {
+        quantity: { increment: donation.quantity },
+      },
+      create: {
+        ongId: donation.ongId,
+        itemName: donation.itemName,
+        category: donation.category,
+        unit: donation.unit,
+        quantity: donation.quantity,
+      },
+    });
+
+    if (donation.postId) {
+      await tx.post.update({
+        where: { id: donation.postId },
+        data: {
+          amountRaised: {
+            increment: donation.quantity,
+          },
         },
       });
+    }
 
-      return updated;
-    });
-  }
+    return updated;
+  });
+}
 
   async cancel(id, ongId) {
     const donation = await prisma.donationCheckin.findFirst({

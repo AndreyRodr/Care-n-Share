@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import inventoryController from '../controllers/InventoryController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import requireApprovedOngMiddleware from '../middlewares/requireApprovedOngMiddleware.js';
 import validate from '../middlewares/validateMiddleware.js';
 import { idParamSchema } from '../schemas/commonSchemas.js';
 import {
@@ -14,7 +15,7 @@ import {
 
 const router = Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, requireApprovedOngMiddleware);
 
 router.get(
   '/',
@@ -26,12 +27,6 @@ router.post(
   '/',
   validate(createInventoryItemSchema),
   inventoryController.createItem
-);
-
-router.get(
-  '/movements',
-  validate(inventoryMovementQuerySchema, 'query'),
-  inventoryController.listAllMovements
 );
 
 router.get(

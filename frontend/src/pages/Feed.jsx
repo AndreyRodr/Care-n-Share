@@ -3,8 +3,6 @@ import api from '../services/api.js';
 import { Sparkles, Heart, Users, HeartOff, PlusCircle, Compass, LayoutList, Settings, Gift } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import PostCard from '../components/PostCard.jsx';
-import OngModal from '../components/OngModal.jsx';
-import PixModal from '../components/PixModal.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import OngSearchFilters from '../components/OngSearchFilters.jsx';
 import CreatePostFlow from '../components/PostComponents/CreatePostFlow.jsx';
