@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api.js';
 import Navbar from '../components/Navbar.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const EditProfile = () => {
   const navigate = useNavigate();
   usePageTitle('Editar Perfil');
+  const { user, refreshSession } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,7 +22,6 @@ const EditProfile = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
       setFormData({
         name: user.name || '',
@@ -31,7 +32,7 @@ const EditProfile = () => {
       });
       setPreview(user.profilePicture);
     }
-  }, []);
+  }, [user]);
 
   const compressImage = (file) => {
     return new Promise((resolve) => {
@@ -97,7 +98,7 @@ const EditProfile = () => {
 
       const response = await api.put('/api/users/me', submitData);
 
-      localStorage.setItem('user', JSON.stringify(response.data));
+      await refreshSession();
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso! Redirecionando... ✨' });
       
       setTimeout(() => {
@@ -201,7 +202,7 @@ const EditProfile = () => {
                 </div>
               </div>
 
-              {JSON.parse(localStorage.getItem('user'))?.type === 'O' && (
+              {user?.type === 'O' && (
                 <div className="form-group">
                   <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'rgba(var(--rgb-text), 0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Chave PIX da ONG</label>
                   <input 

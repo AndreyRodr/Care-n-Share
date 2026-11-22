@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import api from '../services/api.js';
-import { Sparkles, Heart, Users, HeartOff, PlusCircle, Compass, LayoutList } from 'lucide-react';
+import { Sparkles, Heart, Users, HeartOff, PlusCircle, Compass, LayoutList, Settings, Gift } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
-import PostForm from '../components/PostForm.jsx';
 import PostCard from '../components/PostCard.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
+import OngSearchFilters from '../components/OngSearchFilters.jsx';
+import CreatePostFlow from '../components/PostComponents/CreatePostFlow.jsx';
+import DonationCheckinModal from '../components/PostComponents/DonationCheckinModal.jsx';
+import MyDonationsModal from '../components/PostComponents/MyDonationsModal.jsx';
 import usePageTitle from '../hooks/usePageTitle.js';
+import useOngPosts from '../hooks/useOngPosts.js';
+import useDonationCheckins from '../hooks/useDonationCheckins.js';
 import { toast } from '../utils/toast.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -13,9 +18,17 @@ import { useNavigate } from 'react-router-dom';
 const Feed = () => {
   usePageTitle('Feed Solidário');
   const [ongs, setOngs] = useState([]);
+  const [causes, setCauses] = useState([]);
+  const [ongSearch, setOngSearch] = useState('');
+  const [selectedCauseId, setSelectedCauseId] = useState('');
   const [userSupports, setUserSupports] = useState([]);
-  const [feedPosts, setFeedPosts] = useState([]); // Guarda os posts do feed do usuário
+  const [feedPosts, setFeedPosts] = useState([]); // Guarda os posts do feed do doador
   const { user, isLoading: authLoading } = useAuth()
+  // Posts da própria ONG (simples + arrecadação), via API real (/api/posts)
+  const ongPosts = useOngPosts(user?.type === 'O' ? user.id : null);
+  const { checkins, addCheckin, removeCheckin } = useDonationCheckins(user?.type === 'U' ? user.id : null);
+  const [checkinPost, setCheckinPost] = useState(null);
+  const [showMyDonations, setShowMyDonations] = useState(false);
   // 'explore' (Descobrir ONGs) ou 'feed' (Meu Feed/Meu Mural, dependendo do tipo de conta)
   const [activeTab, setActiveTab] = useState(user?.type === 'O' ? 'feed' : 'explore');
   const [loading, setLoading] = useState(true);
@@ -33,16 +46,9 @@ const Feed = () => {
         return;
       }
 
-      // 1. Execução isolada para usuário ONG
+      // 1. Execução isolada para usuário ONG (os posts da própria ONG vêm do hook useOngPosts)
       if (user.type === 'O') {
-        const [postsRes, ongsRes] = await Promise.all([
-          api.get(`/api/posts/ong/${user.id}`),
-          api.get('/api/users/ongs'),
-        ]);
-
-        const myPosts = postsRes.data.map(post => ({ ...post, ong: user }));
-        myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setFeedPosts(myPosts);
+        const ongsRes = await api.get('/api/users/ongs');
 
         // Mostra as outras ONGs na aba "Descobrir" (sem contar a própria conta)
         setOngs(ongsRes.data.filter(ong => ong.id !== user.id));
@@ -98,6 +104,10 @@ const Feed = () => {
   };
 
   useEffect(() => {
+    api.get('/api/causes').then((res) => setCauses(res.data)).catch(() => setCauses([]));
+  }, []);
+
+  useEffect(() => {
     if (!authLoading) {
       fetchData();
     }
@@ -134,6 +144,30 @@ const Feed = () => {
     }
   };
 
+  const handleCheckinSubmit = async (values) => {
+    addCheckin(values);
+    toast.success('Intenção de doação registrada! A ONG será avisada por fora, por enquanto. 📦');
+    setCheckinPost(null);
+  };
+
+  const filteredOngs = useMemo(() => {
+    const search = ongSearch.trim().toLowerCase();
+    const selectedCause = causes.find((c) => c.id === selectedCauseId);
+
+    return ongs.filter((ong) => {
+      const matchesSearch =
+        !search ||
+        ong.name.toLowerCase().includes(search) ||
+        (ong.description || '').toLowerCase().includes(search);
+
+      const matchesCause =
+        !selectedCause ||
+        (ong.description || '').toLowerCase().includes(selectedCause.name.toLowerCase());
+
+      return matchesSearch && matchesCause;
+    });
+  }, [ongs, ongSearch, selectedCauseId, causes]);
+
   return (
     <div className="app-wrapper">
       <Navbar />
@@ -150,12 +184,20 @@ const Feed = () => {
             <div className="impact-card">
               <span style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(var(--rgb-text),0.3)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Impacto Atual</span>
               <span style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--cozy-accent)' }}>{userSupports.length} causas apoiadas</span>
+              <button type="button" className="btn-manage-posts" style={{ marginTop: '0.75rem', width: '100%', justifyContent: 'center' }} onClick={() => setShowMyDonations(true)}>
+                <Gift size={16} /> Minhas Doações
+              </button>
             </div>
           )}
         </header>
 
         {user?.type === 'O' && activeTab === 'feed' && (
-          <PostForm onPostCreated={fetchData} />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <button type="button" className="btn-manage-posts" onClick={() => navigate('/posts/manage')}>
+              <Settings size={16} /> Gerenciar Posts
+            </button>
+            <CreatePostFlow onCreate={ongPosts.addPost} />
+          </div>
         )}
 
         {/* NAVEGAÇÃO DE ABAS (rótulos diferentes para Doador e ONG) */}
@@ -190,8 +232,21 @@ const Feed = () => {
           <>
             {/* ABA: DESCOBRIR (Mostra o grid de ONGs) */}
             {activeTab === 'explore' && (
-              <div className="ong-grid">
-                {ongs.map((ong) => {
+              <>
+                <OngSearchFilters
+                  search={ongSearch}
+                  onSearchChange={setOngSearch}
+                  causes={causes}
+                  selectedCauseId={selectedCauseId}
+                  onCauseChange={setSelectedCauseId}
+                />
+                {filteredOngs.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Nenhuma ONG encontrada</h3>
+                  </div>
+                ) : (
+                <div className="ong-grid">
+                {filteredOngs.map((ong) => {
                   const isSupporting = userSupports.includes(ong.id);
                   const isProcessing = supportingId === ong.id;
                   return (
@@ -249,19 +304,35 @@ const Feed = () => {
                     </div>
                   );
                 })}
-              </div>
+                </div>
+                )}
+              </>
             )}
 
             {/* ABA: MEU FEED / MEU MURAL */}
             {activeTab === 'feed' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '42rem', margin: '0 auto' }}>
-                {feedPosts.length === 0 ? (
+                {user?.type === 'O' ? (
+                  ongPosts.loading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                      <div style={{ width: '2rem', height: '2rem', borderTop: '3px solid var(--cozy-accent)', borderRight: '3px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    </div>
+                  ) : ongPosts.posts.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Nenhuma novidade ainda</h3>
+                    </div>
+                  ) : (
+                    ongPosts.posts.map(post => (
+                      <PostCard key={post.id} post={post} />
+                    ))
+                  )
+                ) : feedPosts.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '4rem', backgroundColor: 'var(--cozy-card)', borderRadius: '2.5rem', border: '1px solid rgba(var(--rgb-accent), 0.1)' }}>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Nenhuma novidade ainda</h3>
                   </div>
                 ) : (
                   feedPosts.map(post => (
-                    <PostCard key={post.id} post={post} ongName={user?.type === 'U' ? post.ong?.name : undefined} ongAvatar={post.ong?.profilePicture} />
+                    <PostCard key={post.id} post={post} ongName={post.ong?.name} ongAvatar={post.ong?.profilePicture} onCheckin={setCheckinPost} />
                   ))
                 )}
               </div>
@@ -279,12 +350,30 @@ const Feed = () => {
       )} */}
 
       {/* Modal de PIX (Doação) */}
-      {/* {showPixModal && (
+      {showPixModal && (
         <PixModal
           ong={showPixModal}
           onClose={() => setShowPixModal(null)}
         />
-      )} */}
+      )}
+
+      {/* Modal de check-in de doação (RF14) */}
+      {checkinPost && (
+        <DonationCheckinModal
+          post={checkinPost}
+          onClose={() => setCheckinPost(null)}
+          onSubmit={handleCheckinSubmit}
+        />
+      )}
+
+      {/* Painel "Minhas Doações" */}
+      {showMyDonations && (
+        <MyDonationsModal
+          checkins={checkins}
+          onClose={() => setShowMyDonations(false)}
+          onRemove={removeCheckin}
+        />
+      )}
 
       {/* Confirmação antes de parar de apoiar */}
       {confirmStopOng && (

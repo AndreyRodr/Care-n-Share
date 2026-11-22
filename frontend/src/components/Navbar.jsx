@@ -40,6 +40,10 @@ const Navbar = () => {
             className='navbar-routes-btn'
           >Estatisticas</button>
           <button 
+            onClick={() => { navigate('/posts/manage'); }}
+            className='navbar-routes-btn middle'
+          >Gerenciar Posts</button>
+          <button 
             onClick={() => { navigate('/donations'); }}
             className='navbar-routes-btn middle'
           >Gerenciar Doações</button>
