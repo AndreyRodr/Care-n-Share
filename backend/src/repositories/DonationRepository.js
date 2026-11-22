@@ -132,7 +132,6 @@ class DonationRepository {
         ongId_itemName_unit: {
           ongId: donation.ongId,
           itemName: donation.itemName,
-          unit: donation.unit,
         },
       },
       update: {
@@ -141,8 +140,6 @@ class DonationRepository {
       create: {
         ongId: donation.ongId,
         itemName: donation.itemName,
-        category: donation.category,
-        unit: donation.unit,
         quantity: donation.quantity,
       },
     });

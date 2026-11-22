@@ -87,6 +87,10 @@ model Post {
   amountRaised        Decimal  @default(0) @db.Decimal(12, 2)
   fundraisingDeadline DateTime?
 
+  category    String?
+  unit        String?
+  type        String?
+
   ongId String
   ong   User   @relation("UserPosts", fields: [ongId], references: [id])
 
@@ -123,10 +127,8 @@ enum TransactionType {
 model DonationCheckin {
   id          String                @id @default(uuid())
   itemName    String
-  category    String
   quantity    Decimal               @db.Decimal(12, 3)
   type        TransactionType
-  unit        String
   status      DonationCheckinStatus @default(PENDING)
   checkedInAt DateTime?
   createdAt   DateTime              @default(now())

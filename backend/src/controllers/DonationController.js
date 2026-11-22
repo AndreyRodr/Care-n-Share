@@ -6,10 +6,8 @@ class DonationController {
   try {
     const {
       itemName,
-      category,
       quantity,
       type,
-      unit,
       postId
     } = req.body;
 
@@ -27,10 +25,8 @@ class DonationController {
 
     const donation = await donationRepository.create({
       itemName,
-      category,
       quantity,
       type,
-      unit,
       donorId,
       ongId,
       postId
@@ -78,9 +74,9 @@ class DonationController {
     try {
       const ongId = req.user.id;
       const { id } = req.params;
-      const { itemName, category, quantity, unit, type } = req.body;
+      const { itemName, quantity, type } = req.body;
 
-      const result = await donationRepository.update(id, ongId, { itemName, category, quantity, unit, type });
+      const result = await donationRepository.update(id, ongId, { itemName, quantity, type });
       if (result.count === 0) return res.status(404).json({ error: 'Doação não encontrada ou sem permissão.' });
 
       return res.status(200).json({ message: 'Doação atualizada com sucesso.' });

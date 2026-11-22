@@ -7,6 +7,9 @@ class PostController {
       const {
         title,
         content,
+        category,
+        unit,
+        type,
         fundraisingGoal = 0,
         fundraisingDeadline = null
       } = req.body;
@@ -29,7 +32,10 @@ class PostController {
         content,
         image: imageUrl,
         ongId,
-        fundraisingGoal: fundraisingGoal,
+        category,
+        unit,
+        type,
+        fundraisingGoal,
         amountRaised: 0,
         fundraisingDeadline: fundraisingDeadline
       });
@@ -125,6 +131,9 @@ class PostController {
       const {
         title,
         content,
+        category,
+        unit,
+        type,
         fundraisingGoal,
         fundraisingDeadline,
         amountRaised
@@ -134,6 +143,10 @@ class PostController {
 
       if (title !== undefined) updateData.title = title;
       if (content !== undefined) updateData.content = content;
+
+      if (unit !== undefined) updateData.unit = unit;
+      if (type !== undefined) updateData.type = type;
+      if (category !== undefined) updateData.category = category;
 
       if (fundraisingGoal !== undefined) {
         updateData.fundraisingGoal = fundraisingGoal;
