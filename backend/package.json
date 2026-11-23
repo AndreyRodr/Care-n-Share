@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "postinstall": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "contract:emit": "prisma contract emit"
-  },
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
